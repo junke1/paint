@@ -171,6 +171,10 @@ const app = {
     },
     SET_CLEAR(state) {
       state.canvas.clear();
+      state.canvas.setBackgroundColor("rgba(220,220,220,1)", undefined, {
+        erasable: false,
+      });
+      state.canvas.requestRenderAll();
     },
   },
   actions: {
