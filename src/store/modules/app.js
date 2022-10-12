@@ -8,15 +8,22 @@ const app = {
     // 选择的对象
     selectedObj: null,
     // 填充的颜色
-    fillColor: "#000",
+    fillColor: "transparent",
+    // 线框颜色
     strokeColor: "#000",
     // 选择的工具
     selectTool: "brush",
+    lineSize: 50,
     // 画布状态
     canvasState: null,
     // 复制
     _clipboard: null,
-
+    // 阴影颜色
+    shadowColor: "#ddd",
+    // 模糊程度
+    blur: 10,
+    // 偏移量
+    offsetValue: 10,
     // 撤销队列
     stateArr: [],
     stateIdx: -1,
@@ -64,6 +71,15 @@ const app = {
     },
     SET_STROKECOLOR: (state, color) => {
       state.strokeColor = color;
+    },
+    SET_SHADOWCOLOR: (state, color) => {
+      state.shadowColor = color;
+    },
+    SET_BLUR: (state, value) => {
+      state.blur = value;
+    },
+    SET_OFFSETVALUE: (state, value) => {
+      state.offsetValue = value;
     },
 
     //设置状态
@@ -125,6 +141,9 @@ const app = {
       );
       state.canvas.requestRenderAll();
     },
+    SET_LINESIZE: (state, value) => {
+      state.lineSize = value;
+    },
     SET_BAKCGROUNDIMG: (state, obj) => {
       state.canvas.setBackgroundColor("", undefined, {
         erasable: false,
@@ -139,6 +158,9 @@ const app = {
       // state.canvas.freeDrawingBrush = new fabric.PencilBrush(state.canvas);
       state.canvas.isDrawingMode = true;
       state.canvas.requestRenderAll();
+    },
+    SET_CLEAR(state) {
+      state.canvas.clear();
     },
   },
   actions: {
@@ -291,6 +313,10 @@ const app = {
     changeImgMode: (state) => state.changeImgMode,
     fillColor: (state) => state.fillColor,
     strokeColor: (state) => state.strokeColor,
+    lineSize: (state) => state.lineSize,
+    shadowColor: (state) => state.shadowColor,
+    blur: (state) => state.blur,
+    offsetValue: (state) => state.offsetValue,
   },
 };
 export default app;

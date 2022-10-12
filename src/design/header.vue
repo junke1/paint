@@ -23,6 +23,7 @@
         <div title="恢复" @click="_redo">
           <i class="el-icon-right"></i>
         </div>
+        <div title="清空" @click="handleClear">清空</div>
         <div title="预览" @click="handlePreview">平面预览</div>
         <div title="导出" @click="convertToImagen">导出</div>
       </div>
@@ -138,6 +139,7 @@ export default {
   },
   methods: {
     tapToolBtn(tool) {
+      this.$store.commit("SET_SELECTEDOBJ", null);
       this.$store.commit("SET_SELECTEDTOOL", tool);
       this.$store.commit("SET_TYPE");
     },
@@ -170,6 +172,10 @@ export default {
         this.previewImgPath = res;
         this.isShowPreview = true;
       });
+    },
+    // 清空
+    handleClear() {
+      this.$store.commit("SET_CLEAR");
     },
     /**
      * 导出图片信息

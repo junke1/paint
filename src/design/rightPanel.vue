@@ -174,26 +174,27 @@
               </div>
             </div>
           </template>
-
-          <div class="word-item" v-if="selectedObj">
-            <div class="title">阴影颜色：</div>
-            <div class="content">
-              <el-color-picker
-                size="mini"
-                show-alpha
-                :predefine="predefineColors"
-                v-model="selectedObj.fill"
-                @change="selectFontColor"
-              ></el-color-picker>
-            </div>
-          </div>
         </template>
         <template v-if="objType == 'paint'">
           <div class="title-info">
             <span>属性设置</span>
           </div>
           <template v-if="!isCanvasImg">
-            <div class="word-item">
+            <div class="word-item" v-if="!selectedObj">
+              <div class="title">笔宽：</div>
+              <div class="size-class">
+                <el-input
+                  size="small"
+                  type="number"
+                  v-model="paintwidth"
+                  @keyup.enter.native="changePaintSize"
+                  @blur="changePaintSize"
+                >
+                  <template v-slot:append>mm</template>
+                </el-input>
+              </div>
+            </div>
+            <div class="word-item" v-if="selectedObj">
               <div class="title">宽度：</div>
               <div class="size-class">
                 <el-input
@@ -270,6 +271,46 @@
             </div>
           </div> -->
         </template>
+        <div class="word-item">
+          <div class="title">阴影颜色：</div>
+          <div class="content">
+            <el-color-picker
+              size="mini"
+              show-alpha
+              :predefine="predefineColors"
+              v-model="shadowColor"
+              @change="selectShadowColor"
+            ></el-color-picker>
+          </div>
+        </div>
+        <div class="word-item">
+          <div class="title">模糊度：</div>
+          <div class="content" style="width: 50%">
+            <el-slider
+              v-model="blur"
+              :show-input-controls="false"
+              input-size="mini"
+              :min="0"
+              :max="20"
+              :step="1"
+              @change="selectBlur"
+            />
+          </div>
+        </div>
+        <div class="word-item">
+          <div class="title">偏移量：</div>
+          <div class="content" style="width: 50%">
+            <el-slider
+              v-model="offsetValue"
+              :show-input-controls="false"
+              input-size="mini"
+              :min="0"
+              :max="10"
+              :step="0.1"
+              @change="selectOffsetValue"
+            />
+          </div>
+        </div>
         <div class="word-item word-item-style" v-if="selectedObj">
           <template v-if="objType == 'text'">
             <!--斜体-->
@@ -519,41 +560,6 @@
                 </el-dropdown>
               </div>
             </el-tooltip>
-            <!--投影-->
-            <el-tooltip
-              :enterable="false"
-              effect="dark"
-              content="投影"
-              placement="top"
-            >
-              <div class="style-item">
-                <el-popover placement="bottom" width="300" trigger="click">
-                  <div class="paddingPopover">
-                    <el-row>
-                      <el-col :span="5" style="line-height: 38px">
-                        <span>投影</span>
-                      </el-col>
-                      <el-col :span="19">
-                        <el-slider
-                          v-model="selectedObj.shadowNum"
-                          :min="0"
-                          :max="1"
-                          :step="0.1"
-                          show-input
-                          :show-input-controls="false"
-                          input-size="mini"
-                          @input="selectShadow"
-                        >
-                        </el-slider>
-                      </el-col>
-                    </el-row>
-                  </div>
-                  <div class="style-info" slot="reference">
-                    <div class="icon shadow"></div>
-                  </div>
-                </el-popover>
-              </div>
-            </el-tooltip>
             <!--锁定-->
             <el-tooltip
               :enterable="false"
@@ -594,7 +600,7 @@
           v-if="selectTool == 'move'"
           @click="handleDelInfo"
         >
-          <span>{{ isCanvasImg ? "取消背景图编辑" : "删除" }}</span>
+          <span>删除</span>
         </el-button>
       </div>
     </div>
@@ -631,6 +637,10 @@ export default {
       fontFamilyList: FontFamilys,
       fillColor: "#fff",
       strokeColor: "#000",
+      shadowColor: "#ddd",
+      blur: 1,
+      offsetValue: 1,
+      paintwidth: 0,
       fontSearch: "", //字体搜索
       chnAndEng: "中文",
       selectFont: {
@@ -682,7 +692,13 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["canvas", "selectedObj", "changeImgMode", "selectTool"]),
+    ...mapGetters([
+      "canvas",
+      "selectedObj",
+      "changeImgMode",
+      "selectTool",
+      "lineSize",
+    ]),
   },
   watch: {
     selectedObj: {
@@ -779,6 +795,13 @@ export default {
           this.rightShow = false;
           this.rightWidth = 0;
         }
+        this.$nextTick(function () {
+          if (this.canvas.freeDrawingBrush) {
+            this.paintwidth = this.canvas.freeDrawingBrush.width;
+          } else {
+            this.paintwidth = this.lineSize;
+          }
+        });
       },
       deep: true,
       immediate: true,
@@ -786,10 +809,6 @@ export default {
   },
   methods: {
     ...mapActions(["del", "copy", "paste"]),
-    /**
-     * 替换图片操作
-     * @param mode 当前所选择的操作类型
-     */
     handleChangeImg(mode) {
       if (mode === 0) {
         if (this.changeImgMode !== 0) {
@@ -832,15 +851,29 @@ export default {
         this.selectedObj.scaleX = this.sizewidth / this.selectedObj.width; //原始的图片大小
         this.selectedObj.scaleY = this.sizeheight / this.selectedObj.height;
       }
-
       this.$forceUpdate();
       this.canvas.requestRenderAll();
+    },
+    changePaintSize() {
+      if (this.selectTool != "brush") {
+        console.log("12", this.paintwidth);
+        this.$store.commit("SET_LINESIZE", this.paintwidth);
+      } else {
+        this.canvas.freeDrawingBrush &&
+          this.$set(
+            this.canvas.freeDrawingBrush,
+            "width",
+            Number(this.paintwidth)
+          );
+      }
+      console.log("12s");
     },
 
     //右侧显示不显示
     shousuo() {
       if (this.selectedObj == null || this.selectTool == "eraser") {
         this.$message.info("请选择任一元素进行编辑");
+        this.rightWidth = 0;
         return;
       }
       this.rightShow = !this.rightShow;
@@ -851,10 +884,7 @@ export default {
       }
       // this.setRightState(this.rightShow);
     },
-    /**
-     *
-     * @param color
-     */
+    // 字体颜色
     selectFontColor(color) {
       if (this.selectedObj.shadow) {
         this.selectedObj.shadow.color = color;
@@ -868,32 +898,77 @@ export default {
       this.canvas.requestRenderAll();
       this.$store.commit("ADD");
     },
+    // 填充
     selectFillColor(color) {
       this.$store.commit("SET_FILLCOLOR", color);
       this.selectedObj && this.selectedObj.set("fill", color);
       this.canvas.requestRenderAll();
       this.$store.commit("ADD");
     },
+    // 线宽
     selectStrokeColor(color) {
       this.$store.commit("SET_STROKECOLOR", color);
       this.selectedObj && this.selectedObj.set("stroke", color);
       this.canvas.requestRenderAll();
       this.$store.commit("ADD");
     },
+    // 设置阴影颜色
+    selectShadowColor(color) {
+      this.$store.commit("SET_SHADOWCOLOR", color);
+      if (this.selectedObj && this.selectedObj.shadow) {
+        this.selectedObj.shadow.color = color;
+      } else if (this.selectedObj) {
+        let shadow = new fabric.Shadow({
+          color: color,
+          blur: this.blur * 10,
+          offsetX: this.offsetValue * 50,
+          offsetY: this.offsetValue * 60,
+        });
+        this.selectedObj.shadow = shadow;
+      }
+      this.canvas.requestRenderAll();
+      this.$store.commit("ADD");
+    },
+    // 设置模糊度
+    selectBlur(value) {
+      this.$store.commit("SET_BLUR", value);
+      if (this.selectedObj && this.selectedObj.shadow) {
+        this.selectedObj.shadow.blur = value;
+      } else if (this.selectedObj) {
+        let shadow = new fabric.Shadow({
+          color: this.shadowColor,
+          blur: value * 10,
+          offsetX: this.offsetValue * 50,
+          offsetY: this.offsetValue * 60,
+        });
+        this.selectedObj.shadow = shadow;
+      }
+      this.canvas.requestRenderAll();
+      this.$store.commit("ADD");
+    },
+    // 设置偏移量
+    selectOffsetValue(value) {
+      this.$store.commit("SET_OFFSETVALUE", value);
+      if (this.selectedObj && this.selectedObj.shadow) {
+        this.selectedObj.shadow.offsetX = value * 50;
+        this.selectedObj.shadow.offsetY = value * 60;
+      } else if (this.selectedObj) {
+        let shadow = new fabric.Shadow({
+          color: this.shadowColor,
+          blur: this.blur * 10,
+          offsetX: value * 50,
+          offsetY: value * 60,
+        });
+        this.selectedObj.shadow = shadow;
+      }
+      this.canvas.requestRenderAll();
+      this.$store.commit("ADD");
+    },
     /**
      * 字体大小改变
-     * @param font 当前字体大小
      */
     selectFontSize(font) {
-      // let oldWidth = this.selectedObj.width;
-      // let width =
-      //   this.canvas.getSelectionContext().measureText(this.selectedObj.text)
-      //     .width / this.canvas.getZoom();
       this.selectedObj.fontSize = font;
-      // if (oldWidth === width) {
-      //   this.selectedObj.width = 0;
-      //   this.selectedObj.setCoords();
-      // }
       this.canvas.requestRenderAll();
     },
     /**

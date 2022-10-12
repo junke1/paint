@@ -24,7 +24,7 @@ export default {
       isDrawing: false,
       mouseFrom: {},
       mouseTo: {},
-      lineSize: 50,
+      // lineSize: 50,
       drawingObject: null,
       freeDrawingBrush: null,
       eraser: null,
@@ -32,7 +32,15 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["selectTool", "fillColor", "strokeColor"]),
+    ...mapGetters([
+      "selectTool",
+      "fillColor",
+      "strokeColor",
+      "lineSize",
+      "shadowColor",
+      "blur",
+      "offsetValue",
+    ]),
   },
   watch: {
     strokeColor: {
@@ -91,13 +99,9 @@ export default {
         this.canvas.setBackgroundColor("rgba(220,220,220,1)", undefined, {
           erasable: false,
         });
-        // this.canvas.freeDrawingBrush = new fabric.SprayBrush(this.canvas);
         this.initCanvasEvent();
         this.freeDrawingBrush = this.canvas.freeDrawingBrush;
 
-        // this.canvas.freeDrawingBrush = new fabric.EraserBrush(this.canvas); // 使用橡皮擦画笔
-        // this.canvas.freeDrawingBrush.width = 50; // 设置画笔粗细为 10
-        // this.eraser = this.canvas.freeDrawingBrush;
         this.canvas.requestRenderAll();
 
         // 记录画布原始状态
@@ -214,19 +218,21 @@ export default {
       this.canvas.isDrawingMode = true;
       this.$set(canvas, "freeDrawingBrush", this.freeDrawingBrush);
       // 画笔投影
-      canvas.freeDrawingBrush.shadow = new fabric.Shadow({
-        blur: 10,
-        offsetX: 10,
-        offsetY: 10,
-        affectStroke: true,
-        color: "#30e3ca",
+      canvas.freeDrawingBrush.shadow = this.createShadow();
+    },
+    createShadow() {
+      let shadow = new fabric.Shadow({
+        color: this.shadowColor,
+        blur: this.blur * 10,
+        offsetX: this.offsetValue * 50,
+        offsetY: this.offsetValue * 60,
       });
+      return shadow;
     },
 
     //初始化 绘制直线
     initLine() {
       // 根据保存的鼠标起始点坐标 创建直线对象
-
       let canvasObject = new fabric.Line(
         [
           this.getTransformedPosX(this.mouseFrom.x),
@@ -237,7 +243,8 @@ export default {
         {
           fill: this.fillColor,
           stroke: this.strokeColor,
-          strokeWidth: 50 || this.lineSize,
+          strokeWidth: Number(this.lineSize),
+          shadow: this.createShadow(),
         }
       );
       // 绘制 图形对象
@@ -259,7 +266,8 @@ export default {
         height,
         stroke: this.strokeColor,
         fill: this.fillColor,
-        strokeWidth: 50 || this.lineSize,
+        strokeWidth: Number(this.lineSize),
+        shadow: this.createShadow(),
       });
       // 绘制矩形
       this.startDrawingObject(canvasObject);
@@ -284,7 +292,8 @@ export default {
         stroke: this.strokeColor,
         fill: this.fillColor,
         radius,
-        strokeWidth: 50 || this.lineSize,
+        strokeWidth: Number(this.lineSize),
+        shadow: this.createShadow(),
       });
       // 绘制圆形对象
       this.startDrawingObject(canvasObject);
