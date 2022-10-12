@@ -141,89 +141,105 @@
         </template>
         <template v-if="objType == 'image'">
           <div class="title-info">
-            <span>{{ isCanvasImg ? "画布背景" : "图片" }}</span>
+            <span>图片</span>
           </div>
-          <template v-if="!isCanvasImg">
-            <div class="word-item">
-              <div class="title">宽度：</div>
-              <div class="size-class">
-                <el-input
-                  size="small"
-                  type="number"
-                  v-model="sizewidth"
-                  @keyup.enter.native="changeSize"
-                  @blur="changeSize"
-                >
-                  <template v-slot:append>mm</template>
-                </el-input>
-              </div>
+          <div class="word-item">
+            <div class="title">宽度：</div>
+            <div class="size-class">
+              <el-input
+                size="small"
+                type="number"
+                v-model="sizewidth"
+                @keyup.enter.native="changeSize"
+                @blur="changeSize"
+              >
+                <template v-slot:append>mm</template>
+              </el-input>
             </div>
+          </div>
 
-            <div class="word-item" v-if="selectedObj">
-              <div class="title">高度：</div>
-              <div class="size-class">
-                <el-input
-                  size="small"
-                  type="number"
-                  v-model="sizeheight"
-                  @keyup.enter.native="changeSize"
-                  @blur="changeSize"
-                >
-                  <template v-slot:append>mm</template>
-                </el-input>
+          <div class="word-item" v-if="selectedObj">
+            <div class="title">高度：</div>
+            <div class="size-class">
+              <el-input
+                size="small"
+                type="number"
+                v-model="sizeheight"
+                @keyup.enter.native="changeSize"
+                @blur="changeSize"
+              >
+                <template v-slot:append>mm</template>
+              </el-input>
+            </div>
+          </div>
+          <!-- <div class="word-item img-item">
+            <div class="title">换图：</div>
+            <div class="content img-info">
+              <div
+                class="img-btn"
+                :class="changeImgMode === 0 ? 'active' : ''"
+                @click="handleChangeImg(0)"
+              >
+                左侧选择
+              </div>
+              <span style="padding-left: 4px; padding-right: 4px">或</span>
+              <div
+                class="img-btn"
+                :class="changeImgMode === 1 ? 'active' : ''"
+                @click="handleChangeImg(1)"
+              >
+                本地上传
               </div>
             </div>
-          </template>
+          </div> -->
         </template>
         <template v-if="objType == 'paint'">
           <div class="title-info">
             <span>属性设置</span>
           </div>
-          <template v-if="!isCanvasImg">
-            <div class="word-item" v-if="!selectedObj">
-              <div class="title">笔宽：</div>
-              <div class="size-class">
-                <el-input
-                  size="small"
-                  type="number"
-                  v-model="paintwidth"
-                  @keyup.enter.native="changePaintSize"
-                  @blur="changePaintSize"
-                >
-                  <template v-slot:append>mm</template>
-                </el-input>
-              </div>
+          <div class="word-item" v-if="!selectedObj">
+            <div class="title">笔宽：</div>
+            <div class="size-class">
+              <el-input
+                size="small"
+                type="number"
+                v-model="paintwidth"
+                @keyup.enter.native="changePaintSize"
+                @blur="changePaintSize"
+              >
+                <template v-slot:append>mm</template>
+              </el-input>
             </div>
-            <div class="word-item" v-if="selectedObj">
-              <div class="title">宽度：</div>
-              <div class="size-class">
-                <el-input
-                  size="small"
-                  type="number"
-                  v-model="sizewidth"
-                  @keyup.enter.native="changeSize"
-                  @blur="changeSize"
-                >
-                  <template v-slot:append>mm</template>
-                </el-input>
-              </div>
+          </div>
+          <div class="word-item" v-if="selectedObj">
+            <div class="title">宽度：</div>
+            <div class="size-class">
+              <el-input
+                size="small"
+                type="number"
+                v-model="sizewidth"
+                @keyup.enter.native="changeSize"
+                @blur="changeSize"
+              >
+                <template v-slot:append>mm</template>
+              </el-input>
             </div>
+          </div>
 
-            <div class="word-item" v-if="selectedObj">
-              <div class="title">高度：</div>
-              <div class="size-class">
-                <el-input
-                  size="small"
-                  type="number"
-                  v-model="sizeheight"
-                  @keyup.enter.native="changeSize"
-                  @blur="changeSize"
-                >
-                  <template v-slot:append>mm</template>
-                </el-input>
-              </div>
+          <div class="word-item" v-if="selectedObj">
+            <div class="title">高度：</div>
+            <div class="size-class">
+              <el-input
+                size="small"
+                type="number"
+                v-model="sizeheight"
+                @keyup.enter.native="changeSize"
+                @blur="changeSize"
+              >
+                <template v-slot:append>mm</template>
+              </el-input>
             </div>
-          </template>
+          </div>
 
           <div class="word-item">
             <div class="title">填充颜色：</div>
@@ -249,27 +265,34 @@
               ></el-color-picker>
             </div>
           </div>
-
-          <!-- <div class="word-item img-item">
-            <div class="title">换图：</div>
-            <div class="content img-info">
-              <div
-                class="img-btn"
-                :class="changeImgMode === 0 ? 'active' : ''"
-                @click="handleChangeImg(0)"
-              >
-                左侧选择
-              </div>
-              <span style="padding-left: 4px; padding-right: 4px">或</span>
-              <div
-                class="img-btn"
-                :class="changeImgMode === 1 ? 'active' : ''"
-                @click="handleChangeImg(1)"
-              >
-                本地上传
-              </div>
+          <div class="word-item" v-if="this.selectTool == 'brush'">
+            <div class="title">线长：</div>
+            <div class="content" style="width: 50%">
+              <el-slider
+                v-model="dashLine"
+                :show-input-controls="false"
+                input-size="mini"
+                :min="0"
+                :max="100"
+                :step="10"
+                @change="changeDashLine"
+              />
             </div>
-          </div> -->
+          </div>
+          <div class="word-item" v-if="this.selectTool == 'brush'">
+            <div class="title">间断：</div>
+            <div class="content" style="width: 50%">
+              <el-slider
+                v-model="dashBetween"
+                :show-input-controls="false"
+                input-size="mini"
+                :min="0"
+                :max="200"
+                :step="10"
+                @change="changeDashBetween"
+              />
+            </div>
+          </div>
         </template>
         <div class="word-item">
           <div class="title">阴影颜色：</div>
@@ -471,119 +494,117 @@
               </div>
             </el-tooltip>
           </template>
-          <template v-if="!isCanvasImg">
-            <!--图层-->
-            <el-tooltip
-              :enterable="false"
-              effect="dark"
-              content="图层"
-              placement="top"
-            >
-              <div class="style-item">
-                <el-dropdown
-                  :hide-on-click="false"
-                  @command="selectZindex"
-                  size="medium"
-                  trigger="click"
-                >
-                  <div class="style-info">
-                    <div class="icon layer"></div>
-                  </div>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item
-                      v-for="(item, index) in getZindexList()"
-                      :key="index"
-                      :disabled="!item.enabled"
-                      :command="item.fun"
-                      >{{ item.name }}
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </div>
-            </el-tooltip>
-            <!--透明度-->
-            <el-tooltip
-              :enterable="false"
-              effect="dark"
-              content="透明度"
-              placement="top"
-            >
-              <div class="style-item">
-                <el-popover placement="bottom" width="300" trigger="click">
-                  <div class="paddingPopover">
-                    <el-row>
-                      <el-col :span="5" style="line-height: 38px">
-                        <span>透明度</span>
-                      </el-col>
-                      <el-col :span="19">
-                        <el-slider
-                          v-model="selectedObj.opacity"
-                          :min="0"
-                          :max="1"
-                          :step="0.1"
-                          show-input
-                          :show-input-controls="false"
-                          input-size="mini"
-                          @input="selectOpacity"
-                        >
-                        </el-slider>
-                      </el-col>
-                    </el-row>
-                  </div>
-                  <div class="style-info" slot="reference">
-                    <div class="icon opacity"></div>
-                  </div>
-                </el-popover>
-              </div>
-            </el-tooltip>
-            <!--翻转-->
-            <el-tooltip
-              :enterable="false"
-              effect="dark"
-              content="翻转"
-              placement="top"
-            >
-              <div class="style-item">
-                <el-dropdown
-                  :hide-on-click="false"
-                  @command="selectScale"
-                  size="medium"
-                  trigger="click"
-                >
-                  <div class="style-info">
-                    <div class="icon reverse"></div>
-                  </div>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item command="z">纵向翻转</el-dropdown-item>
-                    <el-dropdown-item command="h">横向翻转</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </div>
-            </el-tooltip>
-            <!--锁定-->
-            <el-tooltip
-              :enterable="false"
-              effect="dark"
-              content="锁定"
-              placement="top"
-            >
-              <div
-                class="style-item"
-                @click="selectEvent"
-                :class="selectedObj.lockMovementX ? 'active' : ''"
+          <!--图层-->
+          <el-tooltip
+            :enterable="false"
+            effect="dark"
+            content="图层"
+            placement="top"
+          >
+            <div class="style-item">
+              <el-dropdown
+                :hide-on-click="false"
+                @command="selectZindex"
+                size="medium"
+                trigger="click"
               >
                 <div class="style-info">
-                  <div class="icon lock"></div>
+                  <div class="icon layer"></div>
                 </div>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item
+                    v-for="(item, index) in getZindexList()"
+                    :key="index"
+                    :disabled="!item.enabled"
+                    :command="item.fun"
+                    >{{ item.name }}
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
+          </el-tooltip>
+          <!--透明度-->
+          <el-tooltip
+            :enterable="false"
+            effect="dark"
+            content="透明度"
+            placement="top"
+          >
+            <div class="style-item">
+              <el-popover placement="bottom" width="300" trigger="click">
+                <div class="paddingPopover">
+                  <el-row>
+                    <el-col :span="5" style="line-height: 38px">
+                      <span>透明度</span>
+                    </el-col>
+                    <el-col :span="19">
+                      <el-slider
+                        v-model="selectedObj.opacity"
+                        :min="0"
+                        :max="1"
+                        :step="0.1"
+                        show-input
+                        :show-input-controls="false"
+                        input-size="mini"
+                        @input="selectOpacity"
+                      >
+                      </el-slider>
+                    </el-col>
+                  </el-row>
+                </div>
+                <div class="style-info" slot="reference">
+                  <div class="icon opacity"></div>
+                </div>
+              </el-popover>
+            </div>
+          </el-tooltip>
+          <!--翻转-->
+          <el-tooltip
+            :enterable="false"
+            effect="dark"
+            content="翻转"
+            placement="top"
+          >
+            <div class="style-item">
+              <el-dropdown
+                :hide-on-click="false"
+                @command="selectScale"
+                size="medium"
+                trigger="click"
+              >
+                <div class="style-info">
+                  <div class="icon reverse"></div>
+                </div>
+                <el-dropdown-menu slot="dropdown">
+                  <el-dropdown-item command="z">纵向翻转</el-dropdown-item>
+                  <el-dropdown-item command="h">横向翻转</el-dropdown-item>
+                </el-dropdown-menu>
+              </el-dropdown>
+            </div>
+          </el-tooltip>
+          <!--锁定-->
+          <el-tooltip
+            :enterable="false"
+            effect="dark"
+            content="锁定"
+            placement="top"
+          >
+            <div
+              class="style-item"
+              @click="selectEvent"
+              :class="selectedObj.lockMovementX ? 'active' : ''"
+            >
+              <div class="style-info">
+                <div class="icon lock"></div>
               </div>
-            </el-tooltip>
-          </template>
+            </div>
+          </el-tooltip>
         </div>
         <!--复制-->
         <el-button
           style="width: calc(100% - 40px); margin-left: 20px; margin-top: 30px"
           size="small"
-          v-if="!isCanvasImg || selectTool == 'move'"
+          v-if="selectTool == 'move'"
           @click="
             copy();
             paste();
@@ -638,6 +659,8 @@ export default {
       fillColor: "#fff",
       strokeColor: "#000",
       shadowColor: "#ddd",
+      dashLine: 0,
+      dashBetween: 0,
       blur: 1,
       offsetValue: 1,
       paintwidth: 0,
@@ -683,7 +706,6 @@ export default {
       objType: "image",
       sizewidth: 0, //当前图片宽度
       sizeheight: 0, //当前图片高度
-      isCanvasImg: false, //当前操作的是不是画布背景图片
       uploadImgPath: "", //上传的文件地址信息
       rightShow: false,
       rightWidth: 0,
@@ -710,7 +732,6 @@ export default {
           } else {
             type = val.type;
           }
-          this.isCanvasImg = false;
           this.$store.state.app.changeImgMode = -1;
           let fontFamily = "";
           switch (type) {
@@ -746,11 +767,6 @@ export default {
               this.isImage = true;
               this.objType = "image";
               this.rightShow = true;
-              if (this.clipBOXClone !== this.selectedObj) {
-                this.isCanvasImg = false;
-              } else {
-                this.isCanvasImg = true;
-              }
               break;
             case "path":
             case "line":
@@ -856,7 +872,6 @@ export default {
     },
     changePaintSize() {
       if (this.selectTool != "brush") {
-        console.log("12", this.paintwidth);
         this.$store.commit("SET_LINESIZE", this.paintwidth);
       } else {
         this.canvas.freeDrawingBrush &&
@@ -866,7 +881,16 @@ export default {
             Number(this.paintwidth)
           );
       }
-      console.log("12s");
+    },
+    changeDashLine() {
+      if (this.selectTool == "brush") {
+        this.$store.commit("SET_DASHLINE", this.dashLine);
+      }
+    },
+    changeDashBetween() {
+      if (this.selectTool == "brush") {
+        this.$store.commit("SET_DASHBETWEEN", this.dashBetween);
+      }
     },
 
     //右侧显示不显示

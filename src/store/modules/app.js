@@ -14,6 +14,10 @@ const app = {
     // 选择的工具
     selectTool: "brush",
     lineSize: 50,
+
+    // 画笔虚线长度
+    dashLine: 0,
+    dashBetween: 0,
     // 画布状态
     canvasState: null,
     // 复制
@@ -80,6 +84,12 @@ const app = {
     },
     SET_OFFSETVALUE: (state, value) => {
       state.offsetValue = value;
+    },
+    SET_DASHLINE: (state, value) => {
+      state.dashLine = value;
+    },
+    SET_DASHBETWEEN: (state, value) => {
+      state.dashBetween = value;
     },
 
     //设置状态
@@ -317,6 +327,8 @@ const app = {
     shadowColor: (state) => state.shadowColor,
     blur: (state) => state.blur,
     offsetValue: (state) => state.offsetValue,
+    dashLine: (state) => state.dashLine,
+    dashBetween: (state) => state.dashBetween,
   },
 };
 export default app;

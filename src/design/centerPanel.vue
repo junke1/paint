@@ -40,6 +40,8 @@ export default {
       "shadowColor",
       "blur",
       "offsetValue",
+      "dashLine",
+      "dashBetween",
     ]),
   },
   watch: {
@@ -93,6 +95,10 @@ export default {
         this.canvas.freeDrawingBrush = new fabric.PencilBrush(this.canvas);
         this.canvas.freeDrawingBrush.width = 50;
         this.canvas.freeDrawingBrush.selection = false;
+        this.canvas.freeDrawingBrush.strokeDashArray = [
+          this.dashLine,
+          this.dashBetween,
+        ]; //参数1，线长，参数2间距
         console.log(this.strokeColor);
         this.canvas.freeDrawingBrush.color = this.strokeColor;
         // 设置画布背景色 (背景色需要这样设置，否则拓展的橡皮功能会报错)
@@ -217,6 +223,10 @@ export default {
       // 设置绘画模式画笔类型为 铅笔类型
       this.canvas.isDrawingMode = true;
       this.$set(canvas, "freeDrawingBrush", this.freeDrawingBrush);
+      this.canvas.freeDrawingBrush.strokeDashArray = [
+        this.dashLine,
+        this.dashBetween,
+      ];
       // 画笔投影
       canvas.freeDrawingBrush.shadow = this.createShadow();
     },

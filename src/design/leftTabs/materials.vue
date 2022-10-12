@@ -2,6 +2,20 @@
   <div>
     <div class="section-lazyonload">
       <div class="template-section-wrap">
+        <div class="background-custom-top">
+          <div id="ss-upload">
+            <input
+              type="file"
+              id="uploadBackground"
+              @change="handleChoiceFile($event)"
+              accept="image/svg+xml,image/jpeg,image/png,image/gif,image/psd"
+              style="display: none"
+            />
+          </div>
+          <button class="left-panel-button" @click="AddImg">
+            本地上传图片
+          </button>
+        </div>
         <div class="template-search">
           <el-input
             v-model="scSearch"
@@ -133,6 +147,25 @@ export default {
     handleAddImg(item) {
       this.addImage(item.imgUrl);
     },
+    AddImg() {
+      document.getElementById("uploadBackground").click();
+    },
+    handleChoiceFile(event) {
+      let val = event.target.value;
+      if (val === undefined || val === null || val.length === 0) {
+        return;
+      }
+      let file = event.target.files[0];
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      console.log(file);
+      let self = this;
+      reader.onload = function () {
+        // 转换成base64格式
+        const base64Img = reader.result;
+        self.addImage(base64Img);
+      };
+    },
   },
 };
 </script>
@@ -142,6 +175,18 @@ export default {
   position: relative;
   height: 100%;
   background: #202427;
+  .left-panel-button {
+    border: none;
+    margin: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    background: #fff;
+    width: 90%;
+    height: 30px;
+    &:active {
+      background: #ddd;
+    }
+  }
   .template-section-wrap {
     height: calc(100vh - 56px);
     overflow-x: hidden;
