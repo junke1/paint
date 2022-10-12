@@ -51,8 +51,8 @@ export default {
   data() {
     return {
       active: -1,
-      activeTabName: "background",
-      openClose: true,
+      activeTabName: "material",
+      openClose: false,
       menuList: [
         {
           text: "素材",
@@ -102,7 +102,7 @@ export default {
 <style lang="less" scoped>
 .left-panel {
   width: 72px;
-  height: 100%;
+  height: calc(100vh - 56);
   display: flex;
   position: relative;
   transition: all 0.3s linear;
@@ -111,6 +111,7 @@ export default {
     background: #2c3136;
     overflow: hidden;
     z-index: 2;
+    height: 100%;
   }
   .leftPanel-menu-button {
     width: 72px;
@@ -136,14 +137,14 @@ export default {
   height: 100%;
   position: absolute;
   // left: -188px;
-  left: 72px;
+  left: -188px;
   transition: 0.3s linear;
   .left-panel-mainContent-toggle {
     line-height: 80px;
     position: absolute;
     top: 50%;
     transform: translate(0, -50%);
-    right: -16px;
+    right: -14px;
     text-align: center;
     align-items: center;
     background: #24272a;

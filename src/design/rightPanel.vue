@@ -3,11 +3,11 @@
     <div class="page-list" v-if="rightShow">
       <!--文字操作区域-->
       <div class="wordless">
-        <!-- <template v-if="!isImage">
+        <template v-if="objType == 'text'">
           <div class="title-info">
             <span>文字</span>
           </div>
-          <div class="word-item">
+          <div class="word-item" v-if="selectedObj">
             <div class="title">颜色：</div>
             <div class="content">
               <el-color-picker
@@ -22,7 +22,13 @@
           <div class="word-item">
             <div class="title">字体：</div>
             <div class="content">
-              <el-popover placement="bottom" width="250" trigger="click">
+              <el-popover
+                class="content-popover"
+                style="height: 340px; overflow: auto"
+                placement="bottom"
+                width="250"
+                trigger="click"
+              >
                 <el-row class="fontClass">
                   <el-col :span="24">
                     <el-input
@@ -51,7 +57,7 @@
                     </el-col>
                   </el-col>
 
-                  <el-col v-if="chnOrEng" :span="24" class="allFont">
+                  <el-col v-if="chnOrEng" :span="24" class="all-font">
                     <div
                       v-for="(li, index) in fontFamilyList.body.officialFonts"
                       :key="index"
@@ -61,7 +67,7 @@
                           class="font-fontfamily-dividing-line"
                           style="text-align: center"
                         >
-                          {{ li.kindName }}
+                          {{ li.kindName }}...
                         </div>
                         <div
                           class="font-fontfamily-selector-inner-li"
@@ -77,7 +83,8 @@
                       </div>
                     </div>
                   </el-col>
-                  <el-col v-if="!chnOrEng" :span="24" class="allFont">
+
+                  <el-col v-if="!chnOrEng" :span="24" class="all-font">
                     <div
                       v-for="(li, index) in fontFamilyList.body.officialFonts"
                       :key="index"
@@ -114,53 +121,53 @@
               </el-popover>
             </div>
           </div>
-          <div class="word-item">
+          <div class="word-item" v-if="selectedObj">
             <div class="title">字号：</div>
-            <div class="content">
-              <el-dropdown size="small" @command="selectFontSize">
-                <div class="font-size-choose tips">
-                  <input type="text" :value="selectedObj.fontSize" />
-                  <div class="font-pop-icon"></div>
-                </div>
-                <el-dropdown-menu class="dropdownFont" slot="dropdown">
-                  <el-dropdown-item
-                    v-for="(font, index) in fontSizeList"
-                    :command="font"
-                    :key="index"
-                    >{{ font }}
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-            </div>
+            <el-select
+              class="select-item"
+              v-model="selectedObj.fontSize"
+              placeholder="请选择"
+              @change="selectFontSize"
+            >
+              <el-option
+                v-for="(font, index) in fontSizeList"
+                :key="index"
+                :label="font"
+                :value="font"
+              >
+              </el-option>
+            </el-select>
           </div>
-        </template> -->
-        <!-- <template v-else>
+        </template>
+        <template v-if="objType == 'image'">
           <div class="title-info">
             <span>{{ isCanvasImg ? "画布背景" : "图片" }}</span>
           </div>
           <template v-if="!isCanvasImg">
             <div class="word-item">
               <div class="title">宽度：</div>
-              <div class="sizeClass">
+              <div class="size-class">
                 <el-input
                   size="small"
                   type="number"
                   v-model="sizewidth"
                   @keyup.enter.native="changeSize"
+                  @blur="changeSize"
                 >
                   <template v-slot:append>mm</template>
                 </el-input>
               </div>
             </div>
 
-            <div class="word-item">
+            <div class="word-item" v-if="selectedObj">
               <div class="title">高度：</div>
-              <div class="sizeClass">
+              <div class="size-class">
                 <el-input
                   size="small"
                   type="number"
                   v-model="sizeheight"
                   @keyup.enter.native="changeSize"
+                  @blur="changeSize"
                 >
                   <template v-slot:append>mm</template>
                 </el-input>
@@ -168,8 +175,8 @@
             </div>
           </template>
 
-          <div class="word-item">
-            <div class="title">颜色：</div>
+          <div class="word-item" v-if="selectedObj">
+            <div class="title">阴影颜色：</div>
             <div class="content">
               <el-color-picker
                 size="mini"
@@ -180,8 +187,69 @@
               ></el-color-picker>
             </div>
           </div>
+        </template>
+        <template v-if="objType == 'paint'">
+          <div class="title-info">
+            <span>属性设置</span>
+          </div>
+          <template v-if="!isCanvasImg">
+            <div class="word-item">
+              <div class="title">宽度：</div>
+              <div class="size-class">
+                <el-input
+                  size="small"
+                  type="number"
+                  v-model="sizewidth"
+                  @keyup.enter.native="changeSize"
+                  @blur="changeSize"
+                >
+                  <template v-slot:append>mm</template>
+                </el-input>
+              </div>
+            </div>
 
-          <div class="word-item img-item">
+            <div class="word-item" v-if="selectedObj">
+              <div class="title">高度：</div>
+              <div class="size-class">
+                <el-input
+                  size="small"
+                  type="number"
+                  v-model="sizeheight"
+                  @keyup.enter.native="changeSize"
+                  @blur="changeSize"
+                >
+                  <template v-slot:append>mm</template>
+                </el-input>
+              </div>
+            </div>
+          </template>
+
+          <div class="word-item">
+            <div class="title">填充颜色：</div>
+            <div class="content">
+              <el-color-picker
+                size="mini"
+                show-alpha
+                :predefine="predefineColors"
+                v-model="fillColor"
+                @change="selectFillColor"
+              ></el-color-picker>
+            </div>
+          </div>
+          <div class="word-item">
+            <div class="title">线框颜色：</div>
+            <div class="content">
+              <el-color-picker
+                size="mini"
+                show-alpha
+                :predefine="predefineColors"
+                v-model="strokeColor"
+                @change="selectStrokeColor"
+              ></el-color-picker>
+            </div>
+          </div>
+
+          <!-- <div class="word-item img-item">
             <div class="title">换图：</div>
             <div class="content img-info">
               <div
@@ -200,12 +268,12 @@
                 本地上传
               </div>
             </div>
-          </div>
-        </template> -->
-        <div class="word-item word-item-style">
-          <!-- <template v-if="!isImage"> -->
-          <!--斜体-->
-          <!-- <el-tooltip
+          </div> -->
+        </template>
+        <div class="word-item word-item-style" v-if="selectedObj">
+          <template v-if="objType == 'text'">
+            <!--斜体-->
+            <el-tooltip
               :enterable="false"
               effect="dark"
               content="斜体"
@@ -220,9 +288,9 @@
                   <div class="icon italic"></div>
                 </div>
               </div>
-            </el-tooltip> -->
-          <!--下划线-->
-          <!-- <el-tooltip
+            </el-tooltip>
+            <!--下划线-->
+            <el-tooltip
               :enterable="false"
               effect="dark"
               content="下划线"
@@ -237,9 +305,9 @@
                   <div class="icon underline"></div>
                 </div>
               </div>
-            </el-tooltip> -->
-          <!--加粗-->
-          <!-- <el-tooltip
+            </el-tooltip>
+            <!--加粗-->
+            <el-tooltip
               :enterable="false"
               effect="dark"
               content="加粗"
@@ -273,9 +341,9 @@
                   </div>
                 </el-popover>
               </div>
-            </el-tooltip> -->
-          <!--对齐-->
-          <!-- <el-tooltip
+            </el-tooltip>
+            <!--对齐-->
+            <el-tooltip
               :enterable="false"
               effect="dark"
               content="对齐"
@@ -288,20 +356,18 @@
                   width="205"
                   trigger="click"
                 >
-                  <ul class="align-check">
-                    <li
-                      v-for="(li, index) in fontAList"
-                      :key="index"
-                      :class="
-                        getTextAlign() == li.class
-                          ? `${li.class} active`
-                          : `${li.class}`
-                      "
-                      @click="selectTextAlign(li.class)"
-                    >
-                      <span></span>
-                    </li>
-                  </ul>
+                  <div
+                    class="align-check"
+                    v-for="(li, index) in fontAList"
+                    :key="index"
+                    style="display: inline-block"
+                    :class="
+                      getTextAlign() == li.class
+                        ? `${li.class} active`
+                        : `${li.class}`
+                    "
+                    @click="selectTextAlign(li.class)"
+                  ></div>
                   <div class="style-info" slot="reference">
                     <div
                       :class="'icon align check-' + selectedObj.textAlign"
@@ -309,9 +375,9 @@
                   </div>
                 </el-popover>
               </div>
-            </el-tooltip> -->
-          <!--间距-->
-          <!-- <el-tooltip
+            </el-tooltip>
+            <!--间距-->
+            <el-tooltip
               :enterable="false"
               effect="dark"
               content="间距"
@@ -362,24 +428,11 @@
                   </div>
                 </el-popover>
               </div>
-            </el-tooltip> -->
-          <!--竖排-->
-          <!-- <el-tooltip
-              :enterable="false"
-              effect="dark"
-              content="竖排"
-              placement="top"
-            >
-              <div class="style-item">
-                <div class="style-info">
-                  <div class="icon writingMode"></div>
-                </div>
-              </div>
-            </el-tooltip> -->
-          <!-- </template>
-          <template v-if="!isCanvasImg"> -->
-          <!--图层-->
-          <!-- <el-tooltip
+            </el-tooltip>
+          </template>
+          <template v-if="!isCanvasImg">
+            <!--图层-->
+            <el-tooltip
               :enterable="false"
               effect="dark"
               content="图层"
@@ -406,9 +459,9 @@
                   </el-dropdown-menu>
                 </el-dropdown>
               </div>
-            </el-tooltip> -->
-          <!--透明度-->
-          <!-- <el-tooltip
+            </el-tooltip>
+            <!--透明度-->
+            <el-tooltip
               :enterable="false"
               effect="dark"
               content="透明度"
@@ -441,9 +494,9 @@
                   </div>
                 </el-popover>
               </div>
-            </el-tooltip> -->
-          <!--翻转-->
-          <!-- <el-tooltip
+            </el-tooltip>
+            <!--翻转-->
+            <el-tooltip
               :enterable="false"
               effect="dark"
               content="翻转"
@@ -465,9 +518,9 @@
                   </el-dropdown-menu>
                 </el-dropdown>
               </div>
-            </el-tooltip> -->
-          <!--投影-->
-          <!-- <el-tooltip
+            </el-tooltip>
+            <!--投影-->
+            <el-tooltip
               :enterable="false"
               effect="dark"
               content="投影"
@@ -500,9 +553,9 @@
                   </div>
                 </el-popover>
               </div>
-            </el-tooltip> -->
-          <!--锁定-->
-          <!-- <el-tooltip
+            </el-tooltip>
+            <!--锁定-->
+            <el-tooltip
               :enterable="false"
               effect="dark"
               content="锁定"
@@ -517,31 +570,32 @@
                   <div class="icon lock"></div>
                 </div>
               </div>
-            </el-tooltip> -->
-          <!-- </template> -->
+            </el-tooltip>
+          </template>
         </div>
         <!--复制-->
-        <!-- <el-button
+        <el-button
           style="width: calc(100% - 40px); margin-left: 20px; margin-top: 30px"
           size="small"
-          v-if="!isCanvasImg"
+          v-if="!isCanvasImg || selectTool == 'move'"
           @click="
             copy();
             paste();
           "
         >
           <span>复制并黏贴</span>
-        </el-button> -->
+        </el-button>
 
         <!--删除-->
-        <!-- <el-button
+        <el-button
           style="width: calc(100% - 40px); margin-left: 20px; margin-top: 10px"
           type="info"
           size="small"
+          v-if="selectTool == 'move'"
           @click="handleDelInfo"
         >
           <span>{{ isCanvasImg ? "取消背景图编辑" : "删除" }}</span>
-        </el-button> -->
+        </el-button>
       </div>
     </div>
     <div class="right-panel-mainContent-toggle" @click="shousuo()">
@@ -567,21 +621,228 @@
   </div>
 </template>
 <script>
+import FontFamilys from "@/api/FontInfo/getFontInfo.js";
+import { fabric } from "fabric";
+import { mapGetters, mapActions } from "vuex";
 export default {
   name: "p-right-panel",
   data() {
     return {
+      fontFamilyList: FontFamilys,
+      fillColor: "#fff",
+      strokeColor: "#000",
+      fontSearch: "", //字体搜索
+      chnAndEng: "中文",
+      selectFont: {
+        fontFamily: "宋体", //字体
+        fontName: "宋体", //字体名称
+      },
+      chnOrEng: true, //当前显示的是中文还是英文
+      transition: "left 0.3s linear",
+      predefineColors: [
+        "#ff4500",
+        "#ff8c00",
+        "#ffd700",
+        "#90ee90",
+        "#00ced1",
+        "#1e90ff",
+        "#c71585",
+        "rgba(255, 69, 0, 0.68)",
+        "rgb(255, 120, 0)",
+        "hsv(51, 100, 98)",
+        "hsva(120, 40, 94, 0.5)",
+        "hsl(181, 100%, 37%)",
+        "hsla(209, 100%, 56%, 0.73)",
+        "#c7158577",
+      ], //颜色
+      fontSizeList: [
+        6, 8, 9, 10, 12, 14, 16, 18, 20, 24, 28, 32, 36, 40, 44, 48, 54, 60, 64,
+        72, 80, 88, 96, 104, 120, 144, 200, 250, 300, 350, 400, 500, 600, 700,
+        800, 900, 1000,
+      ], //字体大小
+      fontAList: [
+        { class: "check-left" }, //左对齐
+        { class: "check-center" }, //居中对齐
+        { class: "check-right" }, //右对齐
+        { class: "check-justify" }, //两端对齐
+      ], //对齐文本
+      jiacu: 0, //加粗大小
+      zijianju: 1600, //字间距
+      hangjianju: 1600, //行间距
+      isImage: false, //是否是图像
+      objType: "image",
+      sizewidth: 0, //当前图片宽度
+      sizeheight: 0, //当前图片高度
+      isCanvasImg: false, //当前操作的是不是画布背景图片
+      uploadImgPath: "", //上传的文件地址信息
       rightShow: false,
       rightWidth: 0,
+      scaleX: 1,
+      scaleY: 1,
     };
   },
+  computed: {
+    ...mapGetters(["canvas", "selectedObj", "changeImgMode", "selectTool"]),
+  },
+  watch: {
+    selectedObj: {
+      handler(val, oldValue) {
+        if (val !== oldValue) {
+          let type = "";
+          if (val === null || val === undefined) {
+            type = "";
+          } else {
+            type = val.type;
+          }
+          this.isCanvasImg = false;
+          this.$store.state.app.changeImgMode = -1;
+          let fontFamily = "";
+          switch (type) {
+            case "i-text":
+              this.isImage = false;
+              this.objType = "text";
+              this.rightShow = true;
+              this.selectFont = {
+                fontFamily: "宋体", //字体
+                fontName: "宋体", //字体名称
+              };
+              if (this.selectedObj.fontFamily !== undefined) {
+                fontFamily = this.selectedObj.fontFamily;
+              }
+              for (let item of this.fontFamilyList.body.officialFonts) {
+                let tempIndex = -1;
+                for (let _item of item.fonts) {
+                  if (_item.fontFamily === fontFamily) {
+                    this.selectFont = {
+                      fontFamily: fontFamily, //字体
+                      fontName: _item.fontName, //字体名称
+                    };
+                    tempIndex = 0;
+                    break;
+                  }
+                }
+                if (tempIndex !== -1) {
+                  break;
+                }
+              }
+              break;
+            case "image":
+              this.isImage = true;
+              this.objType = "image";
+              this.rightShow = true;
+              if (this.clipBOXClone !== this.selectedObj) {
+                this.isCanvasImg = false;
+              } else {
+                this.isCanvasImg = true;
+              }
+              break;
+            case "path":
+            case "line":
+            case "rect":
+            case "circle":
+              if (this.selectTool != "eraser") {
+                this.isImage = false;
+                this.objType = "paint";
+                this.rightShow = true;
+              }
+              break;
+            default:
+              this.rightShow = false;
+              break;
+          }
+          if (!this.rightShow) {
+            this.rightWidth = 0;
+          } else {
+            this.rightWidth = 248;
+          }
+          this.$store.commit("SET_RIGHTSTATE", this.rightShow);
+          this.getSize();
+        }
+        if (val && (val.scaleX != this.scaleX || val.scaleY != this.scaleY)) {
+          this.getSize();
+          this.scaleX = val.scaleX;
+          this.scaleY = val.scaleY;
+        }
+      },
+      deep: true,
+    },
+    selectTool: {
+      handler(newValue) {
+        if (newValue != "eraser" && newValue != "move") {
+          this.rightShow = true;
+          this.rightWidth = 248;
+          this.objType = "paint";
+        } else if (this.selectedObj != null) {
+          this.rightShow = true;
+          this.rightWidth = 248;
+        } else {
+          this.rightShow = false;
+          this.rightWidth = 0;
+        }
+      },
+      deep: true,
+      immediate: true,
+    },
+  },
   methods: {
+    ...mapActions(["del", "copy", "paste"]),
+    /**
+     * 替换图片操作
+     * @param mode 当前所选择的操作类型
+     */
+    handleChangeImg(mode) {
+      if (mode === 0) {
+        if (this.changeImgMode !== 0) {
+          this.$message.success("您点击右侧图片素材即可替换");
+          this.$store.state.app.changeImgMode = 0;
+        } else {
+          this.$store.state.app.changeImgMode = -1;
+        }
+      } else {
+        this.$store.state.app.changeImgMode = 1;
+        document.getElementById("uploadBackground").click();
+      }
+    },
+    /**
+     * 获取当前图片大小
+     */
+    getSize() {
+      if (this.objType == "image") {
+        this.sizewidth =
+          this.selectedObj && this.selectedObj.width * this.selectedObj.scaleX;
+        this.sizeheight =
+          this.selectedObj && this.selectedObj.height * this.selectedObj.scaleY;
+      } else if (this.objType == "paint") {
+        this.sizewidth =
+          this.selectedObj && this.selectedObj.width * this.selectedObj.scaleX;
+        this.sizeheight =
+          this.selectedObj && this.selectedObj.height * this.selectedObj.scaleY;
+      }
+    },
+    /**
+     * 调整当前图片大小
+     */
+    changeSize() {
+      if (this.objType == "image") {
+        this.selectedObj.scaleX =
+          this.sizewidth / this.selectedObj._element.naturalWidth; //原始的图片大小
+        this.selectedObj.scaleY =
+          this.sizeheight / this.selectedObj._element.naturalHeight;
+      } else if (this.objType == "paint") {
+        this.selectedObj.scaleX = this.sizewidth / this.selectedObj.width; //原始的图片大小
+        this.selectedObj.scaleY = this.sizeheight / this.selectedObj.height;
+      }
+
+      this.$forceUpdate();
+      this.canvas.requestRenderAll();
+    },
+
     //右侧显示不显示
     shousuo() {
-      // if (this.selectedObj === null || this.selectedObj === undefined) {
-      //   this.$message.info("您当前未选择任何元素");
-      //   return;
-      // }
+      if (this.selectedObj == null || this.selectTool == "eraser") {
+        this.$message.info("请选择任一元素进行编辑");
+        return;
+      }
       this.rightShow = !this.rightShow;
       if (this.rightShow == false) {
         this.rightWidth = 0;
@@ -590,9 +851,355 @@ export default {
       }
       // this.setRightState(this.rightShow);
     },
+    /**
+     *
+     * @param color
+     */
+    selectFontColor(color) {
+      if (this.selectedObj.shadow) {
+        this.selectedObj.shadow.color = color;
+      } else {
+        let shadow = new fabric.Shadow({
+          color: color,
+        });
+        this.selectedObj.shadow = shadow;
+      }
+      this.selectedObj.set("fill", color);
+      this.canvas.requestRenderAll();
+      this.$store.commit("ADD");
+    },
+    selectFillColor(color) {
+      this.$store.commit("SET_FILLCOLOR", color);
+      this.selectedObj && this.selectedObj.set("fill", color);
+      this.canvas.requestRenderAll();
+      this.$store.commit("ADD");
+    },
+    selectStrokeColor(color) {
+      this.$store.commit("SET_STROKECOLOR", color);
+      this.selectedObj && this.selectedObj.set("stroke", color);
+      this.canvas.requestRenderAll();
+      this.$store.commit("ADD");
+    },
+    /**
+     * 字体大小改变
+     * @param font 当前字体大小
+     */
+    selectFontSize(font) {
+      // let oldWidth = this.selectedObj.width;
+      // let width =
+      //   this.canvas.getSelectionContext().measureText(this.selectedObj.text)
+      //     .width / this.canvas.getZoom();
+      this.selectedObj.fontSize = font;
+      // if (oldWidth === width) {
+      //   this.selectedObj.width = 0;
+      //   this.selectedObj.setCoords();
+      // }
+      this.canvas.requestRenderAll();
+    },
+    /**
+     * 删除操作
+     */
+    handleDelInfo() {
+      this.$store.dispatch("del", this.selectedObj);
+      this.rightShow = false;
+    },
+
+    /**
+     * 字体选择改变
+     */
+    fontChange() {
+      if (this.chnAndEng == "中文") {
+        this.chnOrEng = true;
+      } else {
+        this.chnOrEng = false;
+      }
+    },
+    /**
+     * 选择对应的字体
+     * @param item 当前字体
+     */
+    handleChoiceFont(item) {
+      this.selectFont = {
+        fontFamily: item.fontFamily, //字体
+        fontName: item.fontName, //字体名称
+      };
+      this.$store.dispatch("font", item.fontFamily);
+    },
+
+    /**
+     * 斜体
+     */
+    selectFontItalic() {
+      this.selectedObj.fontStyle =
+        this.selectedObj.fontStyle == "italic" ? "" : "italic";
+      //强制刷新
+      this.$forceUpdate();
+      this.canvas.requestRenderAll();
+    },
+
+    /**
+     * 下划线
+     */
+    selectFontUnderline() {
+      this.selectedObj.set("underline", !this.selectedObj.underline);
+      //强制刷新
+      this.$forceUpdate();
+      this.canvas.requestRenderAll();
+    },
+
+    /**
+     * 间距 当前选择数值
+     */
+    selectCharSpacing(value) {
+      this.selectedObj.charSpacing = value;
+      this.$forceUpdate();
+      this.canvas.requestRenderAll();
+    },
+
+    /**
+     * 加粗
+     */
+    selectFontWeight(value) {
+      this.selectedObj.fontWeight = value;
+      this.$forceUpdate();
+      this.canvas.requestRenderAll();
+    },
+
+    /**
+     * 获取对齐文本
+     */
+    getTextAlignText() {
+      if (this.selectedObj.textAlign == "justify") return "两端对齐";
+      if (this.selectedObj.textAlign == "right") return "右对齐";
+      if (this.selectedObj.textAlign == "center") return "居中对齐";
+      return "左对齐";
+    },
+
+    /**
+     * 获取对齐class
+     */
+    getTextAlign() {
+      return "check-" + (this.selectedObj.textAlign || "left");
+    },
+
+    /**
+     * 设置对齐方式
+     */
+    selectTextAlign(cls) {
+      this.selectedObj.textAlign = cls.split("-")[1];
+      //强制刷新
+      this.$forceUpdate();
+      this.canvas.requestRenderAll();
+    },
+
+    /**
+     * 行高
+     * 当前选择数值
+     */
+    selectLineHeight(value) {
+      this.selectedObj.lineHeight = value;
+      this.$forceUpdate();
+      this.canvas.requestRenderAll();
+    },
+    bringForward() {
+      this.selectedObj.bringForward();
+
+      this.canvas.requestRenderAll();
+    },
+
+    sendBackwards() {
+      this.selectedObj.sendBackwards();
+
+      this.canvas.requestRenderAll();
+    },
+
+    sendToBack() {
+      this.selectedObj.sendToBack();
+
+      this.canvas.requestRenderAll();
+    },
+
+    bringToFront() {
+      this.selectedObj.bringToFront();
+
+      this.canvas.requestRenderAll();
+    },
+    /**
+     * 图层变化
+     */
+    selectZindex(cmd) {
+      //执行方法
+      this[cmd]();
+      this.$store.commit("ADD");
+    },
+    /**
+     * 翻转变化
+     */
+    selectScale(cmd) {
+      if (cmd == "z") {
+        this.selectedObj.set({
+          scaleX: -this.selectedObj.scaleX,
+        });
+      }
+      if (cmd == "h") {
+        this.selectedObj.set({
+          scaleY: -this.selectedObj.scaleY,
+        });
+      }
+
+      this.canvas.requestRenderAll();
+      this.$store.commit("ADD");
+    },
+
+    /**
+     * 透明度变化
+     */
+    selectOpacity(value) {
+      this.selectedObj.opacity = value;
+      this.canvas.requestRenderAll();
+    },
+
+    /**
+     * 获取图层操作
+     */
+    getZindexList() {
+      let list = this.canvas._objects;
+      //查找对应的索引
+      let index = list.indexOf(this.selectedObj);
+      let arr = [];
+      arr.push({
+        name: "上移一层",
+        enabled: index < list.length - 2,
+        fun: "bringForward",
+      });
+      arr.push({ name: "下移一层", enabled: index > 1, fun: "sendBackwards" });
+      arr.push({
+        name: "置顶图层",
+        enabled: index < list.length - 2,
+        fun: "bringToFront",
+      });
+      arr.push({ name: "置底图层", enabled: index > 1, fun: "sendToBack" });
+
+      return arr;
+    },
+
+    /**
+     * 获取事件
+     */
+    selectEvent() {
+      if (this.selectedObj.lockMovementX) {
+        this.selectedObj.lockMovementX = false;
+        this.selectedObj.lockMovementY = false;
+        this.selectedObj.lockRotation = false;
+        this.selectedObj.lockScalingX = false;
+        this.selectedObj.lockScalingY = false;
+        this.selectedObj.hasControls = true;
+      } else {
+        this.selectedObj.lockMovementX = true;
+        this.selectedObj.lockMovementY = true;
+        this.selectedObj.lockRotation = true;
+        this.selectedObj.lockScalingX = true;
+        this.selectedObj.lockScalingY = true;
+        this.selectedObj.hasControls = false;
+      }
+      this.$forceUpdate();
+      this.canvas.requestRenderAll();
+    },
+    // 投影
+    selectShadow(value) {
+      let shadow = new fabric.Shadow({
+        color: this.selectedObj.fill,
+        blur: value * 10,
+        offsetX: value * 50,
+        offsetY: value * 60,
+      });
+      this.selectedObj.shadow = shadow;
+      this.canvas.requestRenderAll();
+    },
   },
 };
 </script>
+<style>
+.align-check {
+  z-index: 1;
+  width: auto;
+  width: 50px;
+  height: 20px;
+  cursor: pointer;
+}
+.active[class~="check-left"] {
+  background: url(https://www.chuangkit.com/designdist/left_align_active.svg)
+    no-repeat;
+}
+.active[class~="check-center"] {
+  background: url(https://www.chuangkit.com/designdist/center_align_active.svg)
+    no-repeat;
+}
+.active[class~="check-right"] {
+  background: url(https://www.chuangkit.com/designdist/right_align_active.svg)
+    no-repeat;
+}
+.active[class~="check-justify"] {
+  background: url(https://www.chuangkit.com/designdist/justify_align_active.svg)
+    no-repeat;
+}
+.check-left {
+  background: url(https://www.chuangkit.com/designdist/left_alignment_new.svg)
+    no-repeat;
+}
+.check-center {
+  background: url(https://www.chuangkit.com/designdist/center_alignment_new.svg)
+    no-repeat;
+}
+.check-right {
+  background: url(https://www.chuangkit.com/designdist/right_alignment_new.svg)
+    no-repeat;
+}
+
+.check-justify {
+  background: url(https://www.chuangkit.com/designdist/justify_alignment_new.svg)
+    no-repeat;
+}
+.el-popover {
+  max-height: 340px;
+  overflow: auto;
+  padding: 4px;
+  border: none;
+}
+.font-fontfamily-selector-inner-li {
+  color: #000;
+  font-size: 18px;
+  font-weight: 600;
+  height: 36px;
+  width: 100%;
+  position: relative;
+  cursor: pointer;
+  overflow: hidden;
+  box-sizing: border-box;
+  padding: 7px 20px 6px 20px;
+}
+
+.font-fontfamily-selector-inner-li:hover {
+  background: #f4f4f4;
+}
+
+.font-fontfamily-selector-inner-li:after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 60px;
+  height: 36px;
+  background: linear-gradient(to right, rgba(255, 255, 255, 0), #ffffff);
+}
+
+.font-fontfamily-selector-inner-li .font-fontfamily-selector-inner-li-img {
+  height: 20px;
+  width: 100%;
+  position: absolute;
+}
+</style>
+
 <style lang="less">
 .right-panel {
   height: calc(100vh - 56px);
@@ -606,7 +1213,7 @@ export default {
     position: absolute;
     top: 50%;
     transform: translate(0, -50%);
-    left: -16px;
+    left: -14px;
     text-align: center;
     align-items: center;
     background: #24272a;
@@ -614,6 +1221,158 @@ export default {
     box-shadow: -2px 0 10px 0 rgba(0, 0, 0, 0.532);
     cursor: pointer;
     opacity: 0.7;
+  }
+  .wordless {
+    width: 100%;
+    color: #fff;
+    .title-info {
+      height: 30px;
+      background: #54595e;
+      line-height: 30px;
+      text-align: center;
+      color: #fff;
+    }
+    .word-item-style {
+      display: flex;
+      flex-wrap: wrap;
+    }
+    .word-item {
+      display: flex;
+      padding: 8px 0 0 8px;
+      width: 100%;
+      min-height: 40px;
+      font-size: 14px;
+      line-height: 30px;
+      .size-class {
+        width: 78%;
+      }
+      .el-popover .el-popper {
+        max-height: 340px;
+        overflow: auto;
+      }
+    }
+    .select-item {
+      width: 70%;
+      height: 20px;
+    }
+    .all-font {
+      height: 200px;
+      overflow: auto;
+    }
+  }
+}
+.style-item {
+  height: 44px;
+  width: 20%;
+  display: flex;
+  margin-top: 8px;
+  margin-right: 8px;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  .el-popover {
+    height: auto;
+  }
+  & > span {
+    display: inline-block;
+    width: 100%;
+    height: 100%;
+  }
+
+  .el-dropdown {
+    height: calc(100% - 8px);
+    width: calc(100% - 8px);
+    margin: 4px;
+    background-color: #ffffff;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: #f2f3f6;
+
+      .style-info {
+        background-color: #f2f3f6;
+      }
+    }
+  }
+  .style-info {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    height: calc(100% - 8px);
+    width: calc(100% - 8px);
+    margin: 4px;
+    background-color: #ffffff;
+    border-radius: 4px;
+
+    &:hover {
+      background-color: #f2f3f6;
+    }
+
+    .icon {
+      width: 20px;
+      height: 20px;
+      background-image: url(https://www.chuangkit.com/designdist/tools-bar-icon.svg);
+    }
+
+    .icon[class~="italic"] {
+      background-position: 0 0;
+    }
+
+    .icon[class~="underline"] {
+      background-position: -20px 0;
+    }
+
+    .icon[class~="weight"] {
+      background-position: -40px 0;
+    }
+
+    .icon[class~="align"] {
+      background-position: -60px 0;
+    }
+
+    .icon[class~="space"] {
+      background-position: -80px 0;
+    }
+
+    .icon[class~="writingMode"] {
+      background-image: url(https://www.chuangkit.com/designdist/tools-bar-writingMode-icon.svg);
+    }
+
+    .icon[class~="layer"] {
+      background-position: -100px 0;
+    }
+
+    .icon[class~="opacity"] {
+      background-position: -120px 0;
+    }
+
+    .icon[class~="reverse"] {
+      background-position: -120px -20px;
+    }
+
+    .icon[class~="shadow"] {
+      background-position: 0 -20px;
+    }
+
+    .icon[class~="lock"] {
+      background-position: -40px -20px;
+    }
+
+    .icon[class~="delete"] {
+      background-position: -60px -20px;
+    }
+
+    .icon[class~="imgSize"] {
+      background: url(https://www.chuangkit.com/designdist/left-tool-size.svg);
+    }
+  }
+
+  &.active {
+    .style-info {
+      background-color: #f3f4f9;
+    }
   }
 }
 </style>

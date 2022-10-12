@@ -67,10 +67,13 @@ export default {
   background: #202427;
   .text-scroll {
     padding: 0 10px;
+    height: calc(100vh - 56px);
+    overflow-x: hidden;
   }
   .text-section-top {
     text-align: center;
     color: #fff;
+
     font-family: Arial, Helvetica, sans-serif;
     .large {
       font-size: 24px;
@@ -97,6 +100,7 @@ export default {
   }
   .text-list-ul {
     width: 304px;
+
     display: flex;
     flex-wrap: wrap;
     .container-img {

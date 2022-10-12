@@ -1,4 +1,5 @@
 import { fabric } from "fabric";
+import FontFaceObserver from "fontfaceobserver";
 const app = {
   state: {
     // 画布
@@ -6,8 +7,15 @@ const app = {
     type: "", //选择对象的类型
     // 选择的对象
     selectedObj: null,
+    // 填充的颜色
+    fillColor: "#000",
+    strokeColor: "#000",
+    // 选择的工具
+    selectTool: "brush",
     // 画布状态
     canvasState: null,
+    // 复制
+    _clipboard: null,
 
     // 撤销队列
     stateArr: [],
@@ -44,6 +52,19 @@ const app = {
       state.selectedObj = object;
       state.type = object ? object.type : "";
     },
+    //设置选择的工具
+    SET_SELECTEDTOOL: (state, object) => {
+      state.selectTool = object;
+    },
+    SET_TYPE: (state) => {
+      state.type = "";
+    },
+    SET_FILLCOLOR: (state, color) => {
+      state.fillColor = color;
+    },
+    SET_STROKECOLOR: (state, color) => {
+      state.strokeColor = color;
+    },
 
     //设置状态
     SET_CANVASSTATE: (state, canvasState) => {
@@ -62,7 +83,6 @@ const app = {
         state.stateArr.shift();
         state.stateIdx--;
       }
-      console.log(state, state.stateArr, state.stateIdx, "add");
       state.canvas.requestRenderAll();
     },
     UNDO: (state) => {
@@ -75,7 +95,6 @@ const app = {
           });
         }
       }
-      console.log(state.stateIdx, state.stateArr.length);
       state.canvas.requestRenderAll();
     },
     REDO: (state) => {
@@ -88,7 +107,6 @@ const app = {
           });
         }
       }
-      console.log(state.stateIdx, state.stateArr.length);
       state.canvas.requestRenderAll();
     },
     KEEP_LENGTH: (state) => {
@@ -107,12 +125,27 @@ const app = {
       );
       state.canvas.requestRenderAll();
     },
+    SET_BAKCGROUNDIMG: (state, obj) => {
+      state.canvas.setBackgroundColor("", undefined, {
+        erasable: false,
+      });
+      state.canvas.setBackgroundImage(obj);
+      state.canvas.backgroundImage = obj;
+      console.log(obj, "obj", state.canvas.backgroundImage);
+      state.canvas.requestRenderAll();
+    },
+    SET_BRUSH(state) {
+      console.log(state.canvas);
+      // state.canvas.freeDrawingBrush = new fabric.PencilBrush(state.canvas);
+      state.canvas.isDrawingMode = true;
+      state.canvas.requestRenderAll();
+    },
   },
   actions: {
     //
     addWord({ state, commit }, px) {
       //得到屏幕的中心
-      const textbox = new fabric.Textbox("双击修改文字", {
+      const textbox = new fabric.IText("双击修改文字", {
         left:
           state.canvas.width / 2 / state.canvas.getZoom() -
           //减去内部偏移
@@ -132,10 +165,12 @@ const app = {
       });
       state.canvas.add(textbox).setActiveObject(textbox);
       commit("ADD");
+      commit("SET_SELECTEDOBJ", textbox);
+      commit("SET_SELECTEDTOOL", "move");
 
       // 文本打开编辑模式
-      textbox.enterEditing();
-      textbox.hiddenTextarea.focus();
+      // textbox.enterEditing();
+      // textbox.hiddenTextarea.focus();
     },
     //显示图片
     addImage({ state, commit }, url) {
@@ -163,10 +198,99 @@ const app = {
           state.canvas.add(img).setActiveObject(img);
           img.set("selectable", true);
           commit("ADD");
+          commit("SET_SELECTEDOBJ", img);
+          commit("SET_SELECTEDTOOL", "move");
         },
         { crossOrigin: "anonymous" }
       );
     },
+    copy({ state }) {
+      state.canvas.getActiveObject().clone((cloned) => {
+        state._clipboard = cloned;
+      });
+    },
+    paste({ commit, state }) {
+      // clone again, so you can do multiple copies.
+      if (state._clipboard == null) return;
+
+      state._clipboard.clone((clonedObj) => {
+        state.canvas.discardActiveObject();
+        clonedObj.set({
+          left: clonedObj.left + 10,
+          top: clonedObj.top + 10,
+          evented: true,
+        });
+        if (clonedObj.type === "activeSelection") {
+          // active selection needs a reference to the canvas.
+          clonedObj.canvas = state.canvas;
+          clonedObj.forEachObject((obj) => {
+            state.canvas.add(obj);
+          });
+          // this should solve the unselectability
+          clonedObj.setCoords();
+        } else {
+          state.canvas.add(clonedObj);
+        }
+        state._clipboard.top += 10;
+        state._clipboard.left += 10;
+        state.canvas.setActiveObject(clonedObj);
+        state.canvas.requestRenderAll();
+      });
+
+      commit("ADD");
+    },
+    //删除
+    del({ commit, state }, obj = null) {
+      if (obj == null) {
+        obj = state.canvas.getActiveObject();
+      }
+      if (obj) {
+        if (obj.type == "group") {
+          state.canvas.remove(obj);
+        } else {
+          let arr = obj._objects || [obj];
+          arr.map((o) => {
+            state.canvas.remove(o);
+          });
+        }
+
+        //不要选择上对象
+        commit("SET_SELECTEDOBJ", null);
+        state.canvas.discardActiveObject();
+        state.canvas.requestRenderAll();
+      }
+      // commit("ADD");
+    },
+    //改变字体
+    font({ commit, state }, fname) {
+      if (!state.canvas.getActiveObject()) return;
+
+      console.time("字体加载用时");
+      var ooo = new FontFaceObserver(fname);
+      ooo.load(null, 60000).then(() => {
+        //设置字体
+        let arr = state.canvas.getActiveObject()._objects || [
+          state.canvas.getActiveObject(),
+        ];
+        arr.map((item) => {
+          item.set("fontFamily", fname);
+        });
+        state.canvas.requestRenderAll();
+
+        //记录历史
+        commit("ADD");
+
+        console.timeEnd("字体加载用时");
+      });
+    },
+  },
+  getters: {
+    selectTool: (state) => state.selectTool,
+    selectedObj: (state) => state.selectedObj,
+    canvas: (state) => state.canvas,
+    changeImgMode: (state) => state.changeImgMode,
+    fillColor: (state) => state.fillColor,
+    strokeColor: (state) => state.strokeColor,
   },
 };
 export default app;

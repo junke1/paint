@@ -123,7 +123,6 @@ export default {
       this.listMaterials = materialBoxList.filter((item) => {
         return item.title == title;
       })[0].materials;
-      console.log(this.listMaterials, "12");
     },
     getMaterials() {
       this.sucaiList = materialBoxList.map((item) => ({
@@ -141,7 +140,12 @@ export default {
 .section-lazyonload {
   width: 260px;
   position: relative;
+  height: 100%;
   background: #202427;
+  .template-section-wrap {
+    height: calc(100vh - 56px);
+    overflow-x: hidden;
+  }
   .template-search {
     padding: 10px;
   }
@@ -172,7 +176,7 @@ export default {
         overflow: hidden;
         background: #fff;
         border-radius: 4px;
-        margin: 6px;
+        margin: 4px;
         cursor: pointer;
         img {
           width: 100%;

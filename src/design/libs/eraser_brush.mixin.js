@@ -1,4 +1,3 @@
-import { fabric } from "fabric";
 (function () {
   /** ERASER_START */
   var __setBgOverlayColor = fabric.StaticCanvas.prototype.__setBgOverlayColor;

@@ -54,7 +54,7 @@
   </div>
 </template>
 <script>
-import { fabric } from "fabric";
+import { fabric } from "fabric-with-erasing";
 export default {
   name: "p-background",
   data() {
@@ -113,6 +113,7 @@ export default {
       reader.readAsDataURL(file);
       let canvas = this.$store.state.app.canvas;
       let commit = this.$store.commit;
+      console.log(file);
       reader.onload = function () {
         // 转换成base64格式
         const base64Img = reader.result;
@@ -127,6 +128,8 @@ export default {
             scaleX: canvas.width / img.width,
             scaleY: canvas.height / img.height,
           });
+          canvas.backgroundImage = img;
+          console.log(img, canvas.backgroundImage);
           canvas.setBackgroundColor("", undefined, {
             erasable: false,
           });
