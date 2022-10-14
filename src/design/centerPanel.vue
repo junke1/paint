@@ -43,7 +43,8 @@ export default {
       "lineSize",
       "shadowColor",
       "blur",
-      "offsetValue",
+      "offsetXValue",
+      "offsetYValue",
       "dashLine",
       "dashBetween",
       "dashSmooth",
@@ -276,8 +277,8 @@ export default {
       let shadow = new fabric.Shadow({
         color: this.shadowColor,
         blur: this.blur * 10,
-        offsetX: this.offsetValue * 50,
-        offsetY: this.offsetValue * 60,
+        offsetX: this.offsetXValue * 50,
+        offsetY: this.offsetYValue * 60,
       });
       return shadow;
     },

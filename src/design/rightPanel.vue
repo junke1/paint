@@ -36,11 +36,7 @@
                       prefix-icon="el-icon-search"
                       v-model="fontSearch"
                       size="small"
-                      style="
-                        margin: 12px;
-                        margin-bottom: 0;
-                        width: calc(100% - 24px);
-                      "
+                      style="margin-top: 12px"
                     ></el-input>
                     <el-col
                       :span="24"
@@ -343,16 +339,30 @@
           </div>
         </div>
         <div class="word-item">
-          <div class="title">偏移量：</div>
+          <div class="title">偏移量X：</div>
           <div class="content" style="width: 50%">
             <el-slider
-              v-model="offsetValue"
+              v-model="offsetXValue"
               :show-input-controls="false"
               input-size="mini"
-              :min="0"
+              :min="-10"
               :max="10"
               :step="0.1"
-              @change="selectOffsetValue"
+              @change="selectOffsetValue(offsetXValue, -1)"
+            />
+          </div>
+        </div>
+        <div class="word-item">
+          <div class="title">偏移量Y：</div>
+          <div class="content" style="width: 50%">
+            <el-slider
+              v-model="offsetYValue"
+              :show-input-controls="false"
+              input-size="mini"
+              :min="-10"
+              :max="10"
+              :step="0.1"
+              @change="selectOffsetValue(offsetYValue, 1)"
             />
           </div>
         </div>
@@ -685,7 +695,8 @@ export default {
       dashBetween: 0,
       dashSmooth: 0,
       blur: 1,
-      offsetValue: 1,
+      offsetXValue: 1,
+      offsetYValue: 1,
       paintwidth: 0,
       fontSearch: "", //字体搜索
       chnAndEng: "中文",
@@ -988,8 +999,8 @@ export default {
         let shadow = new fabric.Shadow({
           color: color,
           blur: this.blur * 10,
-          offsetX: this.offsetValue * 50,
-          offsetY: this.offsetValue * 60,
+          offsetX: this.offsetXValue * 50,
+          offsetY: this.offsetYValue * 60,
         });
         this.selectedObj.shadow = shadow;
       }
@@ -1005,8 +1016,8 @@ export default {
         let shadow = new fabric.Shadow({
           color: this.shadowColor,
           blur: value * 10,
-          offsetX: this.offsetValue * 50,
-          offsetY: this.offsetValue * 60,
+          offsetX: this.offsetXValue * 50,
+          offsetY: this.offsetYValue * 60,
         });
         this.selectedObj.shadow = shadow;
       }
@@ -1014,17 +1025,18 @@ export default {
       this.$store.commit("ADD");
     },
     // 设置偏移量
-    selectOffsetValue(value) {
-      this.$store.commit("SET_OFFSETVALUE", value);
+    selectOffsetValue(value, mode) {
+      mode < 0 && this.$store.commit("SET_OFFSETXVALUE", value);
+      mode > 0 && this.$store.commit("SET_OFFSETYVALUE", value);
       if (this.selectedObj && this.selectedObj.shadow) {
-        this.selectedObj.shadow.offsetX = value * 50;
-        this.selectedObj.shadow.offsetY = value * 60;
+        this.selectedObj.shadow.offsetX = this.offsetXValue * 50;
+        this.selectedObj.shadow.offsetY = this.offsetYValue * 60;
       } else if (this.selectedObj) {
         let shadow = new fabric.Shadow({
           color: this.shadowColor,
           blur: this.blur * 10,
-          offsetX: value * 50,
-          offsetY: value * 60,
+          offsetX: this.offsetXValue * 50,
+          offsetY: this.offsetYValue * 60,
         });
         this.selectedObj.shadow = shadow;
       }

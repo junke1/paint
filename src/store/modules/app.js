@@ -28,7 +28,8 @@ const app = {
     // 模糊程度
     blur: 10,
     // 偏移量
-    offsetValue: 10,
+    offsetXValue: 10,
+    offsetYValue: 10,
     // 撤销队列
     stateArr: [],
     stateIdx: -1,
@@ -83,8 +84,11 @@ const app = {
     SET_BLUR: (state, value) => {
       state.blur = value;
     },
-    SET_OFFSETVALUE: (state, value) => {
-      state.offsetValue = value;
+    SET_OFFSETXVALUE: (state, value) => {
+      state.offsetXValue = value;
+    },
+    SET_OFFSETYVALUE: (state, value) => {
+      state.offsetYValue = value;
     },
     SET_DASHLINE: (state, value) => {
       state.dashLine = value;
@@ -359,7 +363,8 @@ const app = {
     lineSize: (state) => state.lineSize,
     shadowColor: (state) => state.shadowColor,
     blur: (state) => state.blur,
-    offsetValue: (state) => state.offsetValue,
+    offsetXValue: (state) => state.offsetXValue,
+    offsetYValue: (state) => state.offsetYValue,
     dashLine: (state) => state.dashLine,
     dashBetween: (state) => state.dashBetween,
     dashSmooth: (state) => state.dashSmooth,

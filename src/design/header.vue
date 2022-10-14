@@ -1,7 +1,7 @@
 <template>
   <div class="header">
     <div class="header-box">
-      <div class="logo">随笔</div>
+      <div class="logo" title="随心落笔，设计心中所想">随笔</div>
       <div class="menus">
         <div
           v-for="btn of btnList"
@@ -116,7 +116,7 @@ export default {
         // },
         {
           name: "btnMove",
-          title: "画布移动",
+          title: "物体移动，alt+鼠标左键画布移动",
           class: "fa fa-arrows-alt",
           fun: "move",
         },
@@ -228,6 +228,7 @@ export default {
       font-size: 18px;
       margin-left: 20px;
       font-weight: bold;
+      cursor: pointer;
     }
     .menus {
       display: flex;
