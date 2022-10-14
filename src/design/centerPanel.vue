@@ -31,6 +31,8 @@ export default {
       freeDrawingBrush: null,
       eraser: null,
       painterBroad: null,
+      lastPosX: null, //拖拽上一次的x坐标
+      lastPosY: null, //
     };
   },
   computed: {
@@ -108,7 +110,6 @@ export default {
           this.dashBetween,
         ]; //参数1，线长，参数2间距
         this.canvas.freeDrawingBrush.decimate = Number(this.dashSmooth);
-        console.log(this.strokeColor);
         this.canvas.freeDrawingBrush.color = this.strokeColor;
         // 设置画布背景色 (背景色需要这样设置，否则拓展的橡皮功能会报错)
         this.canvas.setBackgroundColor("rgba(220,220,220,1)", undefined, {
@@ -144,6 +145,15 @@ export default {
       ]; //'eraser'
       // 监听鼠标按下事件
       this.canvas.on("mouse:down", (options) => {
+        // 记录拖拽时的起始坐标
+        if (options.e.altKey == true) {
+          this.canvas.defaultCursor = "pointer";
+          this.isDragging = true; //isDragging: 拖拽状态，true 表示可拖拽
+          this.lastPosX = options.e.clientX;
+          this.lastPosY = options.e.clientY;
+
+          return;
+        }
         // 判断当前是否选择了集合中的操作
         if (toolTypes.indexOf(this.selectTool) != -1) {
           // 记录当前鼠标的起点坐标 (减去画布在 x y轴的偏移，因为画布左上角坐标不一定在浏览器的窗口左上角)
@@ -206,6 +216,20 @@ export default {
             }
           }
         }
+        if (
+          this.isDragging &&
+          this.selectTool == "move" &&
+          options.e.altKey == true &&
+          options.e.buttons == 1
+        ) {
+          var e = options.e;
+          var vpt = this.canvas.viewportTransform;
+          vpt[4] += e.clientX - this.lastPosX;
+          vpt[5] += e.clientY - this.lastPosY;
+          this.canvas.requestRenderAll();
+          this.lastPosX = e.clientX;
+          this.lastPosY = e.clientY;
+        }
       });
 
       // 监听鼠标松开事件
@@ -221,6 +245,12 @@ export default {
           // recordAdd();
           // 如果当前进行的是移动操作，鼠标松开重置当前视口缩放系数
           if (this.selectTool == "move") {
+            this.isDragging = false;
+            if (!this.isDragging) {
+              this.lastPosX = 0;
+              this.lastPosY = 0;
+              this.canvas.defaultCursor = "default";
+            }
             this.canvas.setViewportTransform(this.canvas.viewportTransform);
           }
         }
