@@ -11,8 +11,19 @@
     />
     <title><%= htmlWebpackPlugin.options.title %></title>
     <style>
-      #app {
-        height: 100%;
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: #313131;
+        border-radius: 2px;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: #bfbfbf;
+        border-radius: 10px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: #888;
       }
     </style>
   </head>

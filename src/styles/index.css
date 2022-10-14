@@ -2887,8 +2887,8 @@ body {
   height: 100%;
   width: 100%;
   overflow: auto;
-  min-width: 1120px;
-  min-height: 600px;
+  /* min-width: 1120px; */
+  /* min-height: 600px; */
   position: relative;
   background: #e7e8f1;
 }
@@ -2896,6 +2896,7 @@ html {
   line-height: 1.15;
 }
 body {
-  font: 14px/1.2 -apple-system, PingFang SC, Hiragino Sans GB, Arial, Microsoft YaHei, Helvetica Neue, sans-serif;
+  font: 14px/1.2 -apple-system, PingFang SC, Hiragino Sans GB, Arial,
+    Microsoft YaHei, Helvetica Neue, sans-serif;
   text-rendering: optimizeLegibility;
 }

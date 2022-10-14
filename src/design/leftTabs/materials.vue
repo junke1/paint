@@ -12,9 +12,13 @@
               style="display: none"
             />
           </div>
-          <button class="left-panel-button" @click="AddImg">
+          <div class="template-search">
+            <el-button @click="AddImg">本地上传图片</el-button>
+          </div>
+
+          <!-- <button class="left-panel-button" @click="AddImg">
             本地上传图片
-          </button>
+          </button> -->
         </div>
         <div class="template-search">
           <el-input
@@ -193,9 +197,12 @@ export default {
   }
   .template-search {
     padding: 10px;
+    .el-button {
+      width: 100%;
+    }
   }
   .material {
-    height: calc(100vh - 56px);
+    // height: calc(100vh - 56px);
     .material-item-title {
       height: 18px;
       padding: 10px;

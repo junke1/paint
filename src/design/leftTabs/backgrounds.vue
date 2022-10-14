@@ -182,15 +182,17 @@ export default {
       background-size: 36px 36px;
       background-position: center;
     }
-    .left-panel-button {
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      background: #fff;
+    .background-custom-top {
       width: 100%;
-      height: 30px;
-      &:active {
-        background: #ddd;
+      .left-panel-button {
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        background: #fff;
+        height: 30px;
+        &:active {
+          background: #ddd;
+        }
       }
     }
   }

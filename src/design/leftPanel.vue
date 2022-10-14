@@ -140,16 +140,17 @@ export default {
   left: -188px;
   transition: 0.3s linear;
   .left-panel-mainContent-toggle {
-    line-height: 80px;
     position: absolute;
     top: 50%;
     transform: translate(0, -50%);
-    right: -14px;
+    right: -20px;
     text-align: center;
     align-items: center;
     background: #24272a;
     border-radius: 0 4px 4px 0;
     box-shadow: 2px 0 10px 0 rgba(0, 0, 0, 0.532);
+    line-height: 80px;
+    width: 20px;
     cursor: pointer;
     opacity: 0.7;
   }

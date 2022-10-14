@@ -1,6 +1,8 @@
 <template>
   <div class="center-panel">
-    <canvas id="canvas"></canvas>
+    <div class="board">
+      <canvas id="canvas"></canvas>
+    </div>
     <!-- 底部按钮区域 -->
     <div class="bottom-btn">
       <div class="btn" title="缩放画布" @click="tapScaleBtn(0)">-</div>
@@ -42,6 +44,7 @@ export default {
       "offsetValue",
       "dashLine",
       "dashBetween",
+      "dashSmooth",
     ]),
   },
   watch: {
@@ -78,9 +81,9 @@ export default {
     // 初始化画布
     initDraw() {
       //画布大小
-      this.painterBroad = document.getElementsByClassName("center-panel")[0];
-      let canvasWidth = this.painterBroad.offsetWidth * 0.966;
-      let canvasHeight = this.painterBroad.offsetHeight * 0.89;
+      this.painterBroad = document.getElementsByClassName("board")[0];
+      let canvasWidth = this.painterBroad.offsetWidth;
+      let canvasHeight = this.painterBroad.offsetHeight;
       if (!this.canvas) {
         this.canvas = new fabric.Canvas("canvas", {
           width: canvasWidth,
@@ -99,6 +102,7 @@ export default {
           this.dashLine,
           this.dashBetween,
         ]; //参数1，线长，参数2间距
+        this.canvas.freeDrawingBrush.decimate = Number(this.dashSmooth);
         console.log(this.strokeColor);
         this.canvas.freeDrawingBrush.color = this.strokeColor;
         // 设置画布背景色 (背景色需要这样设置，否则拓展的橡皮功能会报错)
@@ -227,6 +231,7 @@ export default {
         this.dashLine,
         this.dashBetween,
       ];
+      this.canvas.freeDrawingBrush.decimate = Number(this.dashSmooth);
       // 画笔投影
       canvas.freeDrawingBrush.shadow = this.createShadow();
     },
@@ -382,10 +387,10 @@ export default {
         //设置最终视窗大小
         //注意border 1px
         this.canvas.setHeight(
-          document.getElementsByClassName("center-panel")[0].offsetHeight * 0.88
+          document.getElementsByClassName("board")[0].offsetHeight
         );
         this.canvas.setWidth(
-          document.getElementsByClassName("center-panel")[0].offsetWidth * 0.966
+          document.getElementsByClassName("board")[0].offsetWidth
         );
       });
     },
@@ -399,10 +404,20 @@ export default {
 <style lang="less">
 .center-panel {
   width: 100%;
-  height: calc(100vh - 56px);
-  padding: 20px;
+  height: 100%;
+
   background: #1d2023;
   position: relative;
+  .board {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    margin: auto;
+    width: 90%;
+    height: 90%;
+  }
   #canvas {
     box-shadow: 5px 0 10px 0 rgba(0, 0, 0, 0.532);
   }

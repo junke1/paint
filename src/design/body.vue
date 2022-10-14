@@ -21,5 +21,9 @@ export default {
 <style lang="less">
 .body {
   display: flex;
+  height: calc(100vh - 56px);
+  #centerPanel {
+    height: 100%;
+  }
 }
 </style>

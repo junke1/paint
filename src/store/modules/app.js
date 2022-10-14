@@ -18,6 +18,7 @@ const app = {
     // 画笔虚线长度
     dashLine: 0,
     dashBetween: 0,
+    dashSmooth: 0,
     // 画布状态
     canvasState: null,
     // 复制
@@ -90,6 +91,9 @@ const app = {
     },
     SET_DASHBETWEEN: (state, value) => {
       state.dashBetween = value;
+    },
+    SET_DASHSMOOTH: (state, value) => {
+      state.dashSmooth = value;
     },
 
     //设置状态
@@ -333,6 +337,7 @@ const app = {
     offsetValue: (state) => state.offsetValue,
     dashLine: (state) => state.dashLine,
     dashBetween: (state) => state.dashBetween,
+    dashSmooth: (state) => state.dashSmooth,
   },
 };
 export default app;

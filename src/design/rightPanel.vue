@@ -293,6 +293,20 @@
               />
             </div>
           </div>
+          <div class="word-item" v-if="this.selectTool == 'brush'">
+            <div class="title">平滑程度：</div>
+            <div class="content" style="width: 50%">
+              <el-slider
+                v-model="dashSmooth"
+                :show-input-controls="false"
+                input-size="mini"
+                :min="0"
+                :max="200"
+                :step="10"
+                @change="changeDashSmooth"
+              />
+            </div>
+          </div>
         </template>
         <div class="word-item">
           <div class="title">阴影颜色：</div>
@@ -661,6 +675,7 @@ export default {
       shadowColor: "#ddd",
       dashLine: 0,
       dashBetween: 0,
+      dashSmooth: 0,
       blur: 1,
       offsetValue: 1,
       paintwidth: 0,
@@ -892,10 +907,18 @@ export default {
         this.$store.commit("SET_DASHBETWEEN", this.dashBetween);
       }
     },
+    changeDashSmooth() {
+      if (this.selectTool == "brush") {
+        this.$store.commit("SET_DASHSMOOTH", this.dashSmooth);
+      }
+    },
 
     //右侧显示不显示
     shousuo() {
-      if (this.selectedObj == null || this.selectTool == "eraser") {
+      if (
+        this.selectedObj == null &&
+        (this.selectTool == "eraser" || this.selectTool == "move")
+      ) {
         this.$message.info("请选择任一元素进行编辑");
         this.rightWidth = 0;
         return;
@@ -1308,15 +1331,16 @@ export default {
   z-index: 3;
   transition: 0.3s linear;
   .right-panel-mainContent-toggle {
-    line-height: 80px;
     position: absolute;
     top: 50%;
     transform: translate(0, -50%);
-    left: -14px;
+    left: -20px;
     text-align: center;
     align-items: center;
     background: #24272a;
     border-radius: 4px 0 0 4px;
+    line-height: 80px;
+    width: 20px;
     box-shadow: -2px 0 10px 0 rgba(0, 0, 0, 0.532);
     cursor: pointer;
     opacity: 0.7;
