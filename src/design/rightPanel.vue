@@ -172,6 +172,14 @@
               </el-input>
             </div>
           </div>
+          <div class="word-item" v-if="selectedObj">
+            <div class="title">滤镜：</div>
+            <div class="size-class">
+              <el-button @click="addFilter(0)" size="small">灰化</el-button>
+              <el-button @click="addFilter(-1)" size="small">色偏</el-button>
+              <el-button @click="addFilter(1)" size="small">像素</el-button>
+            </div>
+          </div>
           <!-- <div class="word-item img-item">
             <div class="title">换图：</div>
             <div class="content img-info">
@@ -839,7 +847,7 @@ export default {
     },
   },
   methods: {
-    ...mapActions(["del", "copy", "paste"]),
+    ...mapActions(["del", "copy", "paste", "addFilters"]),
     handleChangeImg(mode) {
       if (mode === 0) {
         if (this.changeImgMode !== 0) {
@@ -851,6 +859,14 @@ export default {
       } else {
         this.$store.state.app.changeImgMode = 1;
         document.getElementById("uploadBackground").click();
+      }
+    },
+    // 添加滤镜
+    addFilter(mode) {
+      if (this.selectedObj.filters.length < 5) {
+        this.addFilters(mode);
+      } else {
+        this.$message.info("每个图片至多增加5个滤镜");
       }
     },
     /**
@@ -885,6 +901,7 @@ export default {
       this.$forceUpdate();
       this.canvas.requestRenderAll();
     },
+    // 笔刷宽
     changePaintSize() {
       if (this.selectTool != "brush") {
         this.$store.commit("SET_LINESIZE", this.paintwidth);
@@ -897,16 +914,19 @@ export default {
           );
       }
     },
+    // 线段
     changeDashLine() {
       if (this.selectTool == "brush") {
         this.$store.commit("SET_DASHLINE", this.dashLine);
       }
     },
+    // 间断
     changeDashBetween() {
       if (this.selectTool == "brush") {
         this.$store.commit("SET_DASHBETWEEN", this.dashBetween);
       }
     },
+    // 平滑
     changeDashSmooth() {
       if (this.selectTool == "brush") {
         this.$store.commit("SET_DASHSMOOTH", this.dashSmooth);
@@ -933,15 +953,15 @@ export default {
     },
     // 字体颜色
     selectFontColor(color) {
-      if (this.selectedObj.shadow) {
-        this.selectedObj.shadow.color = color;
-      } else {
-        let shadow = new fabric.Shadow({
-          color: color,
-        });
-        this.selectedObj.shadow = shadow;
-      }
-      this.selectedObj.set("fill", color);
+      // if (this.selectedObj.shadow) {
+      //   this.selectedObj.shadow.color = color;
+      // } else {
+      //   let shadow = new fabric.Shadow({
+      //     color: color,
+      //   });
+      //   this.selectedObj.shadow = shadow;
+      // }
+      this.$set(this.selectedObj, "fill", color);
       this.canvas.requestRenderAll();
       this.$store.commit("ADD");
     },

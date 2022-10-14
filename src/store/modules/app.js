@@ -164,11 +164,9 @@ const app = {
       });
       state.canvas.setBackgroundImage(obj);
       state.canvas.backgroundImage = obj;
-      console.log(obj, "obj", state.canvas.backgroundImage);
       state.canvas.requestRenderAll();
     },
     SET_BRUSH(state) {
-      console.log(state.canvas);
       // state.canvas.freeDrawingBrush = new fabric.PencilBrush(state.canvas);
       state.canvas.isDrawingMode = true;
       state.canvas.requestRenderAll();
@@ -180,9 +178,33 @@ const app = {
       });
       state.canvas.requestRenderAll();
     },
+    SET_FILTER(state, obj) {
+      state.selectedObj.filters.push(obj);
+      state.selectedObj.applyFilters();
+      state.canvas.requestRenderAll();
+    },
   },
   actions: {
-    //
+    // 增加滤镜
+    addFilters({ commit }, mode) {
+      if (mode == 0) {
+        commit(
+          "SET_FILTER",
+          new fabric.Image.filters.Grayscale({ mode: "lightness" })
+        ); //灰化
+      } else if (mode == -1) {
+        commit("SET_FILTER", new fabric.Image.filters.Sepia()); //色偏
+      } else {
+        commit(
+          "SET_FILTER",
+          new fabric.Image.filters.Pixelate({
+            blocksize: 10,
+          })
+        ); //灰化
+      }
+      commit("ADD");
+    },
+    //增加文字
     addWord({ state, commit }, px) {
       //得到屏幕的中心
       const textbox = new fabric.IText("双击修改文字", {

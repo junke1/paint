@@ -95,6 +95,11 @@ export default {
           hoverCursor: "default", // 设置当前鼠标停留在
         });
         this.canvas.selection = false;
+        // 橡皮擦
+        // this.canvas.freeDrawingBrush = new fabric.EraserBrush(this.canvas);
+        // this.canvas.freeDrawingBrush.width = 10;
+        // this.eraser = this.canvas.freeDrawingBrush;
+        // 铅笔
         this.canvas.freeDrawingBrush = new fabric.PencilBrush(this.canvas);
         this.canvas.freeDrawingBrush.width = 50;
         this.canvas.freeDrawingBrush.selection = false;
@@ -149,7 +154,7 @@ export default {
         }
         if (this.selectTool == "move") {
           this.$store.commit("SET_SELECTEDOBJ", options.target);
-          console.log(options.target);
+          console.log(options.target, "selected");
         }
         if (this.selectTool == "eraser") {
           this.$set(this.canvas, "freeDrawingBrush", null);
