@@ -107,9 +107,12 @@ const app = {
       state.stateIdx = 0;
     },
     ADD: (state) => {
+      if (state.stateArr[state.stateIdx + 1]) {
+        state.stateArr.splice(state.stateIdx + 1);
+      }
       state.stateArr.push(JSON.stringify(state.canvas));
       state.stateIdx++;
-      if (state.stateArr.length > 4) {
+      if (state.stateArr.length > 10) {
         state.stateArr.shift();
         state.stateIdx--;
       }
@@ -321,7 +324,7 @@ const app = {
         state.canvas.discardActiveObject();
         state.canvas.requestRenderAll();
       }
-      // commit("ADD");
+      commit("ADD");
     },
     //改变字体
     font({ commit, state }, fname) {

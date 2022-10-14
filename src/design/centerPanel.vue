@@ -224,7 +224,9 @@ export default {
             this.canvas.setViewportTransform(this.canvas.viewportTransform);
           }
         }
-        this.$store.commit("ADD");
+        if (this.selectTool != "eraser") {
+          this.$store.commit("ADD");
+        }
       });
     },
     // 初始化画笔工具
