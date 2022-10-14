@@ -305,8 +305,8 @@
                 :show-input-controls="false"
                 input-size="mini"
                 :min="0"
-                :max="200"
-                :step="10"
+                :max="100"
+                :step="1"
                 @change="changeDashSmooth"
               />
             </div>
