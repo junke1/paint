@@ -144,6 +144,7 @@ export default {
         "move",
         "eraser",
       ]; //'eraser'
+
       // 监听鼠标按下事件
       this.canvas.on("mouse:down", (options) => {
         // 记录拖拽时的起始坐标
@@ -432,10 +433,25 @@ export default {
         );
       });
     },
+    // 键盘监听事件
+    handleEvent(event) {
+      switch (event.keyCode) {
+        case 67:
+          this.$store.dispatch("copy");
+          break;
+        case 86:
+          this.$store.dispatch("paste");
+          break;
+        case 90:
+          this.$store.commit("UNDO");
+          break;
+      }
+    },
   },
   mounted() {
     this.initDraw();
     this.autoZoom();
+    window.addEventListener("keydown", this.handleEvent);
   },
 };
 </script>
