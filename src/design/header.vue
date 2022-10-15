@@ -225,10 +225,11 @@ export default {
     align-items: center;
     .logo {
       color: #fff;
-      font-size: 18px;
+      font-size: 20px;
       margin-left: 20px;
       font-weight: bold;
       cursor: pointer;
+      font-family: Muyao-Softbrush;
     }
     .menus {
       display: flex;

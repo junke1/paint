@@ -75,8 +75,8 @@ export default {
     }
   }
   .pre-title {
-    width: 40%;
-    height: 40%;
+    width: 50%;
+    height: 50%;
     font-size: 0px;
     top: 10px;
     color: #fff;
@@ -95,6 +95,7 @@ export default {
     font-size: 40px;
     cursor: pointer;
     transition: 0.5s;
+    box-shadow: 0 2px 20px 0 rgba(0, 0, 0, 0.532);
     &:hover {
       color: #1d2023;
       background: #ddd;
